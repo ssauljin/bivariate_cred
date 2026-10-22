@@ -81,13 +81,17 @@ Poisson-gamma part and a Bernoulli-probit part, so that the two sets of
 parameters can be estimated separately. We further derive the posterior
 distributions of the random effects and the exact Bayesian one-step
 predictions of both counts in closed form. We illustrate the model with
-annual claim counts of 17 Korean regions over 2015--2024.
+annual claim counts of 17 Korean regions over 2015--2024 and with the
+claim counts of about 1{,}200 local government entities in Wisconsin over
+2006--2011.
 
 The paper is organized as follows. Section~\ref{sec.prelim} introduces
 the notation and two auxiliary results on Gaussian random effects in
 probit models. Section~\ref{sec.thin} presents the model and the main
 results. Section~\ref{sec.empirical} applies the model to a regional
-panel of total and extreme claim counts.
+panel of total and extreme claim counts, and Section~\ref{sec.lgpif}
+applies it to an entity-level panel of total and vehicle claim counts
+from the Wisconsin Local Government Property Insurance Fund.
 
 
 \section{Preliminaries}
@@ -248,6 +252,8 @@ representation is convenient for computation when \(k\) is large.
 \input{sec_thinning}
 
 \input{sec_empirical}
+
+\input{sec_lgpif}
 
 
 %\bibliographystyle{apalike}

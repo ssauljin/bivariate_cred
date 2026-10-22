@@ -1,0 +1,225 @@
+%==========================================================================
+% Section: Second application -- Wisconsin LGPIF
+%   Results produced by lgpif_models.R; see results_lgpif/.
+%==========================================================================
+\section{Application to the Wisconsin Local Government Property Insurance Fund}
+\label{sec.lgpif}
+
+In this section, we apply Model~\ref{model.thin} to a second data set,
+in which the units are insured entities rather than regions, the panel
+is much larger, and the nested count is defined by the type of
+coverage rather than by the claim size.
+
+\subsection{Data}
+\label{sec.lgpif.data}
+
+The Wisconsin Local Government Property Insurance Fund (LGPIF) insures
+local government entities, such as cities, counties, schools, towns, and
+villages, against property losses. We use the data of E.~W.~Frees, which
+record for each entity and year the claim counts of six coverage types:
+building and contents (BC), inland marine (IM), and four types of
+vehicle coverage, namely new and old vehicle collision (PN, PO) and new
+and old vehicle comprehensive (CN, CO).
+% TODO: add the reference for the data (e.g. Frees, Lee and Yang, 2016) and its source.
+The training data cover \(5{,}677\) entity-years of \(1{,}234\) entities
+over 2006--2010, and the hold-out data cover \(1{,}098\) entities in 2011,
+of which all but \(9\) appear in the training data. We define
+\[
+\begin{aligned}
+N_{it}&:=\text{number of claims over all six coverages},\\
+M_{it}&:=\text{number of vehicle claims (PN, PO, CN, CO)},
+\end{aligned}
+\]
+so that \(M_{it}\le N_{it}\) by construction, and \(M_{it}/N_{it}\) is the
+share of vehicle claims among all claims of entity \(i\) in year \(t\).
+Table~\ref{tab.lgpif.year} reports the annual totals. In contrast to the
+application in Section~\ref{sec.empirical}, the share of vehicle claims
+is stable over the years, between \(33\%\) and \(39\%\).
+
+\begin{table}[htbp]
+\centering
+\caption{Annual totals of the LGPIF claim counts. The year 2011 is the
+hold-out year.}
+\label{tab.lgpif.year}
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+Year & 2006 & 2007 & 2008 & 2009 & 2010 & 2011\\
+\midrule
+Entities & 1{,}162 & 1{,}147 & 1{,}134 & 1{,}117 & 1{,}117 & 1{,}098\\
+\(\sum_i N_{it}\) & 1{,}415 & 1{,}676 & 1{,}471 & 1{,}675 & 1{,}962 & 1{,}733\\
+\(\sum_i M_{it}\) & 518 & 554 & 566 & 569 & 682 & 612\\
+Share (\%) & 36.6 & 33.1 & 38.5 & 34.0 & 34.8 & 35.3\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The covariate vector \(x_{it}\) consists of an intercept, indicators of
+the entity type with cities as the baseline, the indicator IsRC
+provided in the data, the logarithm of the BC deductible, and
+\(\log(1+c)\) for the BC, IM, and total vehicle coverage amounts \(c\), in
+millions. We do not use the no-claim credit variables in the data,
+because they are themselves based on the claim experience of the entity,
+which is accounted for by the random effects.
+% TODO: state the definition of IsRC.
+
+Most entities have no vehicle coverage: \(62\%\) of the entity-years have
+zero vehicle coverage amount, so that the probability of a vehicle claim
+is zero by construction. We therefore apply the binomial part of
+Model~\ref{model.thin} only to the entity-years with vehicle coverage,
+and set the predicted vehicle claim count to zero for the entities
+without it. Only \(4\) entity-years in the training data, with \(9\)
+claims in total, record vehicle claims without vehicle coverage; they
+are excluded from the binomial part. The binomial part is therefore
+estimated from \(1{,}110\) entity-years of \(391\) entities with vehicle
+coverage and at least one claim, which contain \(6{,}294\) claims, of
+which \(2{,}880\) are vehicle claims.
+
+\subsection{Estimation}
+\label{sec.lgpif.estimation}
+
+The estimation follows Section~\ref{sec.emp.estimation}, with the entity
+in place of the region. For the binomial part, the Gauss--Hermite
+quadrature uses \(200\) nodes. Since some entities have several hundred
+claims over the training period, their likelihood contributions are
+sharply peaked in \(\theta\); with \(200\) nodes, \(\ell^{(2)}\) agrees
+with that computed by \(400\) nodes and by adaptive numerical
+integration to within \(5\times10^{-5}\).
+
+Table~\ref{tab.lgpif.coef} reports the estimates. Both random effects
+are strongly supported. For the total claim count, the variance of the
+gamma random effect is \(1/\widehat r=0.735\), the Pearson statistic of
+the Poisson GLM is \(5.18\) times its degrees of freedom, and the
+log-likelihood increases by \(3{,}176\). For the vehicle claims, the
+variance of the Gaussian random effect is \(\widehat\sigma^2=0.360\),
+the Pearson statistic of the probit GLM is \(2.15\) times its degrees of
+freedom, and the log-likelihood increases by \(395\). Both likelihood
+ratio tests have \(p\)-values below \(10^{-100}\). Several coefficients
+change markedly once the random effects are introduced, and their GLM
+standard errors are considerably smaller than the GLMM ones, which
+reflects the neglected dependence among the repeated observations of an
+entity in the GLMs.
+
+\begin{table}[htbp]
+\centering
+\caption{Estimates for the LGPIF data, with standard errors in
+parentheses. Total claims: Poisson GLM and Poisson-gamma GLMM; vehicle
+claims: probit GLM and probit GLMM.}
+\label{tab.lgpif.coef}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+& \multicolumn{2}{c}{Total claims \(N_{it}\)} & \multicolumn{2}{c}{Vehicle claims \(M_{it}\)}\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+& GLM & GLMM & GLM & GLMM\\
+\midrule
+Intercept & \(-1.611\) (0.065) & \(-1.093\) (0.179) & \(1.090\) (0.106) & \(-0.548\) (0.261)\\
+TypeCounty & \(0.791\) (0.037) & \(0.478\) (0.170) & \(0.915\) (0.066) & \(0.831\) (0.172)\\
+TypeMisc & \(-1.463\) (0.097) & \(-0.648\) (0.167) & \(0.236\) (0.277) & \(0.152\) (0.369)\\
+TypeSchool & \(-0.655\) (0.050) & \(-0.486\) (0.128) & \(0.496\) (0.105) & \(0.405\) (0.204)\\
+TypeTown & \(-0.225\) (0.094) & \(-0.425\) (0.156) & \(-0.998\) (0.176) & \(-0.610\) (0.267)\\
+TypeVillage & \(0.006\) (0.049) & \(0.014\) (0.115) & \(-0.263\) (0.095) & \(-0.097\) (0.176)\\
+IsRC & \(-0.343\) (0.025) & \(-0.036\) (0.073) & \(0.011\) (0.037) & \(-0.133\) (0.089)\\
+\(\log(1+\text{BC coverage})\) & \(0.856\) (0.017) & \(0.702\) (0.040) & \(-0.536\) (0.028) & \(-0.350\) (0.062)\\
+log(BC deductible) & \(-0.121\) (0.009) & \(-0.191\) (0.024) & \(-0.005\) (0.014) & \(0.137\) (0.034)\\
+\(\log(1+\text{IM coverage})\) & \(-0.399\) (0.031) & \(0.198\) (0.096) & \(0.017\) (0.052) & \(-0.068\) (0.142)\\
+\(\log(1+\text{vehicle coverage})\) & \(0.516\) (0.015) & \(0.487\) (0.052) & \(0.350\) (0.041) & \(0.377\) (0.086)\\
+\(1/r\) or \(\sigma^2\) & -- & \(0.735\) (0.048) & -- & \(0.360\) (0.053)\\
+\midrule
+Observations & \multicolumn{2}{c}{\(5{,}677\)} & \multicolumn{2}{c}{\(1{,}110\)}\\
+Log-likelihood & \(-9{,}160.5\) & \(-5{,}984.2\) & \(-1{,}700.8\) & \(-1{,}305.3\)\\
+AIC & \(18{,}342.9\) & \(11{,}992.3\) & \(3{,}423.6\) & \(2{,}634.7\)\\
+BIC & \(18{,}416.0\) & \(12{,}072.1\) & \(3{,}478.7\) & \(2{,}694.8\)\\
+Pearson \(\chi^2\)/df & \(5.18\) & -- & \(2.15\) & --\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The estimates are consistent with the coverage structure: a larger
+vehicle coverage is associated with more claims in total and with a
+higher share of vehicle claims, whereas a larger BC coverage is
+associated with more claims in total but a lower share of vehicle
+claims, since it increases the number of BC claims. Counties have both
+more claims and a higher share of vehicle claims than cities, and towns
+have a lower share. As in Section~\ref{sec.empirical}, these
+associations are descriptive.
+
+\subsection{One-step-ahead prediction of 2011}
+\label{sec.lgpif.prediction}
+
+We predict the claim counts of 2011 from the training history as in
+Section~\ref{sec.emp.prediction}: the total claim count by
+\(\E{N_{i,2011}\mid\mathcal H_{i,2010}}\), and the vehicle claim count
+(a) given the realized total claim count by
+\(N_{i,2011}\,\widehat p_{i,2011}\), and (b) without it by
+\(\E{N_{i,2011}\mid\mathcal H_{i,2010}}\,\widehat p_{i,2011}\). The
+\(9\) entities without training data receive the a priori predictions.
+Table~\ref{tab.lgpif.crit} reports the results.
+
+\begin{table}[htbp]
+\centering
+\caption{Prediction criteria for 2011 (\(1{,}098\) entities, of which
+\(405\) have vehicle coverage). The binomial deviance is computed over the
+entities with vehicle coverage and \(N_{i,2011}\ge1\), and the Poisson
+deviance of \(M\) over the entities with vehicle coverage.}
+\label{tab.lgpif.crit}
+\small
+\begin{tabular}{llrr}
+\toprule
+& Criterion & GLM & GLMM\\
+\midrule
+Total claims \(N\) & RMSE & \(7.401\) & \(3.563\)\\
+& MAE & \(1.473\) & \(0.941\)\\
+& Poisson deviance & \(2{,}902.7\) & \(1{,}230.8\)\\
+& Predicted total (actual \(1{,}733\)) & \(1{,}780.2\) & \(1{,}880.2\)\\
+\midrule
+Vehicle claims \(M\), (a) given \(N_{i,2011}\) & RMSE & \(0.898\) & \(0.488\)\\
+& MAE & \(0.212\) & \(0.142\)\\
+& Binomial deviance & \(426.0\) & \(270.4\)\\
+& Predicted total (actual \(612\)) & \(627.3\) & \(646.0\)\\
+\midrule
+Vehicle claims \(M\), (b) unconditional & RMSE & \(2.137\) & \(1.208\)\\
+& MAE & \(0.490\) & \(0.290\)\\
+& Poisson deviance & \(792.2\) & \(343.2\)\\
+& Predicted total (actual \(612\)) & \(598.2\) & \(693.2\)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+In this application, the GLMM improves all entity-level criteria
+substantially. For the vehicle claims given \(N_{i,2011}\), the RMSE
+decreases from \(0.898\) to \(0.488\) and the binomial deviance from
+\(426.0\) to \(270.4\); without \(N_{i,2011}\), the RMSE decreases from
+\(2.137\) to \(1.208\). The credibility adjustments are large: the
+posterior means \(\E{\Theta_i^{(1)}\mid\mathcal H_{i,2010}}\) range from
+\(0.05\) to \(27.3\) with median \(0.80\), and the posterior means of
+\(\Theta_i^{(2)}\) range from \(-1.92\) to \(1.31\) among the entities with
+vehicle coverage. The improvement is not driven by a few large
+entities. Excluding the \(11\) entities in the top \(1\%\) of
+\(N_{i,2011}\), the RMSEs of the GLM and the GLMM are \(2.57\) and
+\(1.89\) for \(N\), and \(0.92\) and \(0.65\) for \(M\) given
+\(N_{i,2011}\). In \(2{,}000\) bootstrap resamples of the entities, the
+GLMM has the smaller RMSE in \(97.0\%\) of the resamples for \(N\) and in
+all resamples for \(M\), in both cases (a) and (b). The GLMMs
+over-predict the portfolio totals, by \(8.5\%\) for \(N\) and \(13.3\%\)
+for \(M\) in case (b), whereas the GLMs predict the totals more closely;
+the entity-level accuracy, which matters for experience rating, is
+nevertheless much higher for the GLMMs.
+
+\subsection{Comparison of the two applications}
+\label{sec.lgpif.comparison}
+
+The two applications lead to different conclusions about the benefit of
+the experience rating of the nested count. In the LGPIF data, the share
+of vehicle claims of an entity is a persistent characteristic,
+determined largely by the composition of its insured property, and the
+annual share in the portfolio is stable. The static random effect
+\(\Theta_i^{(2)}\) captures this persistence, and the credibility
+predictions of Theorem~\ref{thm.thin.pred} improve on the GLM
+substantially. In the regional data of Section~\ref{sec.empirical}, the
+share of extreme claims is dominated by year-specific shocks that are
+common to the regions, and the experience of a region is only weakly
+informative about its next-year share. The static model is therefore
+well suited to nested counts whose split reflects stable unit
+characteristics, while nested counts driven by common shocks call for
+the extensions discussed in Section~\ref{sec.emp.discussion}.

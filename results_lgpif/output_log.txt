@@ -1,0 +1,112 @@
+Training: 5677 entity-years, 1234 entities with training data; test: 1098 entities (9 new)
+Claims in training: N = 8199, M (vehicle) = 2889; entity-years with vehicle coverage: 2195
+Entity-years with M > 0 but no vehicle coverage: training 4, test 0
+
+[N] GLMM converged | max|grad| = 5.97e-10
+
+[M] binomial part: 1110 entity-years with vehicle coverage and N > 0, 391 entities, 6294 claims, 2880 vehicle
+[M] GLMM converged | max|grad| = 2.90e-13
+[M] loglik GH(200) = -1305.339282 | GH(400) = -1305.339244 | integrate() = -1305.339244
+
+=== Total claims N: coefficients ===
+               Term GLM_Estimate  GLM_SE      GLM_p GLMM_Estimate GLMM_SE
+        (Intercept)    -1.611001 0.06473 1.034e-136      -1.09339 0.17929
+         TypeCounty     0.791003 0.03655 7.143e-104       0.47845 0.16969
+           TypeMisc    -1.463150 0.09699  2.024e-51      -0.64784 0.16697
+         TypeSchool    -0.654714 0.05001  3.627e-39      -0.48615 0.12798
+           TypeTown    -0.225426 0.09441  1.695e-02      -0.42516 0.15547
+        TypeVillage     0.006122 0.04925  9.011e-01       0.01381 0.11514
+               IsRC    -0.343074 0.02461  3.516e-44      -0.03643 0.07325
+  log(1+CoverageBC)     0.856271 0.01738  0.000e+00       0.70160 0.03974
+         lnDeductBC    -0.121007 0.00877  2.621e-43      -0.19063 0.02446
+  log(1+CoverageIM)    -0.398827 0.03099  6.689e-38       0.19769 0.09553
+ log(1+CoverageVeh)     0.516425 0.01477 5.398e-268       0.48690 0.05198
+     Var(u) = 1/phi           NA      NA         NA       0.73507 0.04753
+    GLMM_p
+ 1.070e-09
+ 4.810e-03
+ 1.045e-04
+ 1.455e-04
+ 6.243e-03
+ 9.046e-01
+ 6.189e-01
+ 9.385e-70
+ 6.442e-15
+ 3.851e-02
+ 7.397e-21
+        NA
+
+=== Vehicle claims M: coefficients ===
+               Term GLM_Estimate  GLM_SE     GLM_p GLMM_Estimate GLMM_SE
+        (Intercept)     1.090391 0.10648 1.304e-24      -0.54781 0.26128
+         TypeCounty     0.914591 0.06563 3.890e-44       0.83110 0.17179
+           TypeMisc     0.235985 0.27693 3.941e-01       0.15244 0.36918
+         TypeSchool     0.495781 0.10456 2.120e-06       0.40536 0.20360
+           TypeTown    -0.997763 0.17556 1.322e-08      -0.60979 0.26691
+        TypeVillage    -0.262545 0.09497 5.701e-03      -0.09727 0.17638
+               IsRC     0.010720 0.03746 7.747e-01      -0.13328 0.08933
+  log(1+CoverageBC)    -0.536299 0.02792 3.263e-82      -0.34956 0.06153
+         lnDeductBC    -0.004703 0.01356 7.287e-01       0.13733 0.03426
+  log(1+CoverageIM)     0.017143 0.05236 7.434e-01      -0.06749 0.14238
+ log(1+CoverageVeh)     0.349988 0.04086 1.067e-17       0.37675 0.08633
+   Var(v) = sigma^2           NA      NA        NA       0.36029 0.05273
+    GLMM_p
+ 3.603e-02
+ 1.312e-06
+ 6.797e-01
+ 4.648e-02
+ 2.233e-02
+ 5.813e-01
+ 1.357e-01
+ 1.336e-08
+ 6.099e-05
+ 6.355e-01
+ 1.276e-05
+        NA
+
+=== Fit statistics ===
+             Statistic       N_GLM   N_GLMM      M_GLM        M_GLMM
+          Observations  5677.00000  5677.00  1110.0000   1.11000e+03
+            Parameters    11.00000    12.00    11.0000   1.20000e+01
+        Log-likelihood -9160.46017 -5984.16 -1700.7801  -1.30534e+03
+                   AIC 18342.92035 11992.32  3423.5601   2.63468e+03
+                   BIC 18416.00631 12072.05  3478.6934   2.69482e+03
+               LR test          NA  6352.60         NA   7.90882e+02
+     LR p (0.5 chi2_1)          NA     0.00         NA  2.59157e-174
+ Pearson chi2/df (GLM)     5.18418       NA     2.1517            NA
+
+=== 2011 prediction: total claims N (1098 entities, actual total 1733) ===
+        Criterion       GLM       GLMM
+             RMSE    7.4005    3.56297
+              MAE    1.4728    0.94095
+ Poisson deviance 2902.6726 1230.80301
+  Predicted total 1780.2284 1880.20722
+
+=== 2011 prediction: vehicle claims M (actual total 612; 405 entities with vehicle coverage) ===
+* binomial deviance over entities with vehicle coverage and N > 0; Poisson deviance over entities with vehicle coverage
+                           Criterion       GLM      GLMM
+                   (a) given N: RMSE   0.89804   0.48766
+                    (a) given N: MAE   0.21154   0.14217
+     (a) given N: binomial deviance* 425.99384 270.38092
+             (b) unconditional: RMSE   2.13719   1.20751
+              (b) unconditional: MAE   0.48979   0.28967
+ (b) unconditional: Poisson deviance 792.21978 343.15119
+            Predicted total, given N 627.28328 645.96955
+      Predicted total, unconditional 598.15137 693.19969
+
+E[u|H] over test entities: 0.055 / 0.418 / 0.795 / 1.734 / 27.275
+E[v|H] over test entities with vehicle coverage: -1.918 / -0.375 / -0.000 / 0.453 / 1.314
+
+=== Robustness: excluding the 11 entities in the top 1% of N_2011 (N >= 22) ===
+N RMSE: GLM 2.566 | GLMM 1.893
+M RMSE (a): GLM 0.918 | GLMM 0.646;  (b): GLM 2.185 | GLMM 1.705
+Entity bootstrap (2000 resamples), P(RMSE_GLMM < RMSE_GLM): N 0.970 | M (a) 1.000 | M (b) 1.000
+
+=== Claims by year ===
+ Year    N   M Entities Share
+ 2006 1415 518     1162 0.366
+ 2007 1676 554     1147 0.331
+ 2008 1471 566     1134 0.385
+ 2009 1675 569     1117 0.340
+ 2010 1962 682     1117 0.348
+ 2011 1733 612     1098 0.353
