@@ -1,0 +1,837 @@
+%==========================================================================
+% Section: Poisson-gamma / binomial-probit thinning model
+%          for bivariate claim frequency
+%==========================================================================
+\section{Binomial thinning model for bivariate claim frequency}
+\label{sec.thin}
+
+In this section, we develop a model for two nested claim counts.
+For each region \(i\) and period \(t\), let \(N_{it}\) denote the total
+number of claims and let \(M_{it}\) denote the number of extreme claims
+among them, for example, the claims whose amounts exceed a given
+threshold. By construction,
+\[
+0\le M_{it}\le N_{it}.
+\]
+A natural way to respect this constraint is to regard \(M_{it}\) as a
+binomial thinning of \(N_{it}\): each of the \(N_{it}\) claims is
+classified as extreme or not. Repeated observations of the same region
+over time are linked through two region-specific random effects, one
+for the claim frequency and one for the probability that a claim is
+extreme. Throughout this section, the two random effects are assumed to
+be independent and static over time, and predictions are obtained as
+exact Bayesian posterior means.
+
+\begin{model}[Poisson-gamma binomial-probit thinning model]
+\label{model.thin}
+Let
+\[
+r,\sigma\in\Real_{>0},
+\qquad
+\alpha,\beta\in\Real^p,
+\]
+and let \(x_{it}\in\Real^p\), \(i=1,\ldots,I\), \(t\in\mathbb N\), be
+predetermined exogenous covariates, which are allowed to vary over time.
+Define
+\[
+\lambda_{it}:=\exp\left(x_{it}^\top\alpha\right)\in\Real_{>0},
+\qquad
+\eta_{it}:=x_{it}^\top\beta\in\Real.
+\]
+We define the bivariate sequences
+\(\left((N_{it},M_{it})\right)_{t\in\mathbb N}\), \(i=1,\ldots,I\),
+through the following random effect assumption and observation
+equations.
+\begin{itemize}
+  \item[i.] Random effects: For each region \(i\), assume
+  \[
+  \Theta_i^{(1)}\sim\operatorname{Gamma}(r,r),
+  \qquad
+  \Theta_i^{(2)}\sim\operatorname{N}(0,\sigma^2),
+  \]
+  where \(\Theta_i^{(1)}\) and \(\Theta_i^{(2)}\) are independent.
+  Furthermore, the pairs
+  \(\left(\Theta_i^{(1)},\Theta_i^{(2)}\right)\), \(i=1,\ldots,I\),
+  are mutually independent.
+
+  \item[ii.] Observation equations: Conditional on
+  \(\left(\Theta_i^{(1)},\Theta_i^{(2)}\right)\), assume that the pairs
+  \((N_{it},M_{it})\), \(t\in\mathbb N\), are mutually independent with
+  \[
+  N_{it}\mid\Theta_i^{(1)},\Theta_i^{(2)}
+  \sim
+  \operatorname{Pois}\left(\lambda_{it}\Theta_i^{(1)}\right)
+  \]
+  and
+  \[
+  M_{it}\mid N_{it},\Theta_i^{(1)},\Theta_i^{(2)}
+  \sim
+  \operatorname{Bin}\left(N_{it},\Phi\left(\eta_{it}+\Theta_i^{(2)}\right)\right),
+  \]
+  Furthermore, the regions are independent: the sequences
+  \(\left((N_{it},M_{it})\right)_{t\in\mathbb N}\), \(i=1,\ldots,I\),
+  are mutually independent.
+\end{itemize}
+\end{model}
+Here, \(\operatorname{Bin}(0,p)\) is the point mass at \(0\), so that
+\(M_{it}=0\) whenever \(N_{it}=0\).
+
+Since \(\E{\Theta_i^{(1)}}=1\) and \(\E{\Theta_i^{(2)}}=0\), the
+intercepts in \(\alpha\) and \(\beta\) are identifiable, and
+\(\lambda_{it}\) is the a priori expected total claim count. The random
+effect \(\Theta_i^{(1)}\) captures the unobserved heterogeneity of the
+claim frequency across regions, whereas \(\Theta_i^{(2)}\) captures the
+unobserved heterogeneity of the propensity of a claim to be extreme.
+For notational convenience, write
+\[
+p_{it}(\theta):=\Phi\left(\eta_{it}+\theta\right),
+\qquad \theta\in\Real.
+\]
+
+\begin{remark}\label{rem.thin.exposure}
+All results in this section use \(\lambda_{it}\) and \(\eta_{it}\) only
+as known constants. Hence they remain valid for any
+\(\lambda_{it}\in\Real_{>0}\) and \(\eta_{it}\in\Real\); in particular,
+an exposure offset \(e_{it}>0\) can be included through
+\(\lambda_{it}=e_{it}\exp\left(x_{it}^\top\alpha\right)\).
+\end{remark}
+
+The following lemma is the well-known thinning property of the Poisson
+distribution. It shows that, conditional on the random effects, the
+extreme and non-extreme claim counts are independent Poisson random
+variables.
+
+\begin{lemma}[Poisson thinning]
+\label{lem.thin}
+Under Model~\ref{model.thin}, conditional on
+\(\left(\Theta_i^{(1)},\Theta_i^{(2)}\right)\), the random variables
+\(M_{it}\) and \(N_{it}-M_{it}\) are independent with
+\[
+M_{it}\mid\Theta_i^{(1)},\Theta_i^{(2)}
+\sim
+\operatorname{Pois}\left(
+\lambda_{it}\Theta_i^{(1)}p_{it}\left(\Theta_i^{(2)}\right)
+\right)
+\]
+and
+\[
+N_{it}-M_{it}\mid\Theta_i^{(1)},\Theta_i^{(2)}
+\sim
+\operatorname{Pois}\left(
+\lambda_{it}\Theta_i^{(1)}
+\left\{1-p_{it}\left(\Theta_i^{(2)}\right)\right\}
+\right).
+\]
+\end{lemma}
+
+\begin{proof}
+Fix \(\theta_1>0\) and \(\theta_2\in\Real\), and write
+\(\Lambda:=\lambda_{it}\theta_1\) and \(p:=p_{it}(\theta_2)\). For
+\(m,k\in\mathbb N_0\), Model~\ref{model.thin} gives
+\[
+\begin{aligned}
+&\P{M_{it}=m,\,N_{it}-M_{it}=k\mid
+\Theta_i^{(1)}=\theta_1,\Theta_i^{(2)}=\theta_2}\\
+&\quad=
+\P{N_{it}=m+k\mid\Theta_i^{(1)}=\theta_1}
+\binom{m+k}{m}p^m(1-p)^k\\
+&\quad=
+\frac{e^{-\Lambda}\Lambda^{m+k}}{(m+k)!}
+\frac{(m+k)!}{m!\,k!}p^m(1-p)^k\\
+&\quad=
+\frac{e^{-\Lambda p}(\Lambda p)^m}{m!}
+\cdot
+\frac{e^{-\Lambda(1-p)}\left\{\Lambda(1-p)\right\}^k}{k!},
+\end{aligned}
+\]
+which proves the result.
+\end{proof}
+
+Since the regions are independent, it suffices to study a single
+region. The following remark collects the notation for its observed
+history.
+
+\begin{remark}\label{rem.thin.notation}
+Fix a region \(i\) and \(t\in\mathbb N\), and consider a realized
+history
+\[
+\mathcal H_{it}:=
+\left\{
+(N_{ij},M_{ij})=(n_{ij},m_{ij}):\ j=1,\ldots,t
+\right\},
+\qquad
+n_{ij},m_{ij}\in\mathbb N_0,
+\quad
+m_{ij}\le n_{ij}.
+\]
+Define the cumulative claim count and the cumulative a priori
+frequency by
+\[
+n_{i\bullet t}:=\sum_{j=1}^t n_{ij},
+\qquad
+\lambda_{i\bullet t}:=\sum_{j=1}^t \lambda_{ij}.
+\]
+
+Each of the \(n_{i\bullet t}\) observed claims is regarded as a
+Bernoulli trial, which is a success if the claim is extreme. To this
+end, for \(j=1,\ldots,t\), define the sign vector
+\[
+u^{(j)}:=
+\big(
+\underbrace{1,\ldots,1}_{m_{ij}},
+\underbrace{-1,\ldots,-1}_{n_{ij}-m_{ij}}
+\big)^\top
+\in\{-1,1\}^{n_{ij}},
+\]
+which is empty when \(n_{ij}=0\), and stack these vectors as
+\[
+u_{1:n_{i\bullet t}}:=
+\left(
+u^{(1)\top},\ldots,u^{(t)\top}
+\right)^\top,
+\qquad
+h_{1:n_{i\bullet t}}:=
+\big(
+\underbrace{\eta_{i1},\ldots,\eta_{i1}}_{n_{i1}},
+\ldots,
+\underbrace{\eta_{it},\ldots,\eta_{it}}_{n_{it}}
+\big)^\top .
+\]
+That is, \(u_k\) is the sign of the \(k\)th claim and \(h_k\) is the
+value of \(\eta_{ij}\) in the period \(j\) of the \(k\)th claim. We then
+define
+\[
+\mu_{it}:=
+\left(u_1h_1,\ldots,u_{n_{i\bullet t}}h_{n_{i\bullet t}}\right)^\top
+\in\Real^{n_{i\bullet t}},
+\qquad
+\boldsymbol U_{it}:=
+u_{1:n_{i\bullet t}}u_{1:n_{i\bullet t}}^\top
+\in\Real^{n_{i\bullet t}\times n_{i\bullet t}},
+\]
+which are the mean vector and the rank-one matrix appearing in
+Lemma~\ref{lem.bp} for the trials formed by the observed claims.
+
+For \(n,m\in\mathbb N_0\) with \(m\le n\), let
+\(\mu_{it}^{(n,m)}\in\Real^{n_{i\bullet t}+n}\) and
+\(\boldsymbol U_{it}^{(n,m)}\in\Real^{(n_{i\bullet t}+n)\times(n_{i\bullet t}+n)}\)
+denote the corresponding quantities for the augmented history
+\(\mathcal H_{it}\cup\{(N_{i,t+1},M_{i,t+1})=(n,m)\}\). That is,
+\(n\) additional trials with \(\eta\)-value \(\eta_{i,t+1}\) are appended,
+\(m\) of them with sign \(1\) and \(n-m\) of them with sign \(-1\).
+
+Finally, define
+\[
+D_{it}(\theta):=
+\prod_{j=1}^t
+p_{ij}(\theta)^{m_{ij}}
+\left\{1-p_{ij}(\theta)\right\}^{n_{ij}-m_{ij}},
+\qquad\theta\in\Real.
+\]
+Since \(1-\Phi(a)=\Phi(-a)\) for \(a\in\Real\), we have
+\begin{equation}\label{eq.thin.D}
+D_{it}(\theta)
+=
+\prod_{k=1}^{n_{i\bullet t}}
+\Phi\left(u_k(h_k+\theta)\right).
+\end{equation}
+For \(n_{i\bullet t}=0\), we adopt the conventions
+\(D_{it}(\theta)=1\) and
+\(\Phi_0\left(\mu_{it};\boldsymbol I_0+\sigma^2\boldsymbol U_{it}\right)=1\).
+\end{remark}
+
+The following theorem shows that the joint probability of the observed
+history factorizes into a closed-form Poisson-gamma part, which depends
+only on \((\alpha,r)\), and a Bernoulli-probit part of the form in
+Lemma~\ref{lem.bp}, which depends only on \((\beta,\sigma)\).
+
+\begin{theorem}[Likelihood factorization]
+\label{thm.thin.lik}
+Consider Model~\ref{model.thin} with the realized history
+\(\mathcal H_{it}\), and let the notation be as in
+Remark~\ref{rem.thin.notation}. Then
+\begin{equation}\label{eq.thin.factorization}
+\P{\mathcal H_{it}}
+=
+L^{(1)}_{it}\,L^{(2)}_{it},
+\end{equation}
+where
+\begin{equation}\label{eq.thin.L1}
+L^{(1)}_{it}
+:=
+\P{N_{i,1:t}=n_{i,1:t}}
+=
+\frac{\Gamma\left(r+n_{i\bullet t}\right)}
+{\Gamma(r)\prod_{j=1}^t n_{ij}!}
+\,
+\frac{r^r\prod_{j=1}^t\lambda_{ij}^{n_{ij}}}
+{\left(r+\lambda_{i\bullet t}\right)^{r+n_{i\bullet t}}}
+\end{equation}
+and
+\begin{equation}\label{eq.thin.L2}
+\begin{aligned}
+L^{(2)}_{it}
+&:=
+\P{M_{i,1:t}=m_{i,1:t}\mid N_{i,1:t}=n_{i,1:t}}\\
+&=
+\prod_{j=1}^t\binom{n_{ij}}{m_{ij}}
+\int_{\Real}
+\frac{1}{\sigma}\phi\left(\frac{\theta}{\sigma}\right)
+D_{it}(\theta)
+\,{\rm d}\theta\\
+&=
+\prod_{j=1}^t\binom{n_{ij}}{m_{ij}}
+\,
+\Phi_{n_{i\bullet t}}
+\left(
+\mu_{it};
+\boldsymbol I_{n_{i\bullet t}}
++
+\sigma^2\boldsymbol U_{it}
+\right).
+\end{aligned}
+\end{equation}
+\end{theorem}
+
+\begin{proof}
+By the conditional independence in Model~\ref{model.thin},
+\[
+\P{\mathcal H_{it}}
+=
+\E{
+\prod_{j=1}^t
+\P{N_{ij}=n_{ij}\mid\Theta_i^{(1)}}
+\P{M_{ij}=m_{ij}\mid N_{ij}=n_{ij},\Theta_i^{(2)}}
+}.
+\]
+The first factor in the product depends only on \(\Theta_i^{(1)}\) and
+the second only on \(\Theta_i^{(2)}\). Since \(\Theta_i^{(1)}\) and
+\(\Theta_i^{(2)}\) are independent, we obtain
+\[
+\P{\mathcal H_{it}}
+=
+\E{
+\prod_{j=1}^t
+\P{N_{ij}=n_{ij}\mid\Theta_i^{(1)}}
+}
+\,
+\E{
+\prod_{j=1}^t
+\P{M_{ij}=m_{ij}\mid N_{ij}=n_{ij},\Theta_i^{(2)}}
+}.
+\]
+
+For the first expectation, the gamma integral gives
+\[
+\begin{aligned}
+\E{
+\prod_{j=1}^t
+\P{N_{ij}=n_{ij}\mid\Theta_i^{(1)}}
+}
+&=
+\int_0^\infty
+\prod_{j=1}^t
+\frac{e^{-\lambda_{ij}\theta}(\lambda_{ij}\theta)^{n_{ij}}}{n_{ij}!}
+\,
+\frac{r^r}{\Gamma(r)}\theta^{r-1}e^{-r\theta}
+\,{\rm d}\theta\\
+&=
+\frac{r^r\prod_{j=1}^t\lambda_{ij}^{n_{ij}}}
+{\Gamma(r)\prod_{j=1}^t n_{ij}!}
+\int_0^\infty
+\theta^{r+n_{i\bullet t}-1}
+e^{-(r+\lambda_{i\bullet t})\theta}
+\,{\rm d}\theta,
+\end{aligned}
+\]
+which equals the right-hand side of \eqref{eq.thin.L1}. Summing the
+first display over all \(m_{i,1:t}\) with \(0\le m_{ij}\le n_{ij}\)
+shows that this expectation is \(\P{N_{i,1:t}=n_{i,1:t}}\), because
+the second expectation sums to one.
+
+For the second expectation, we have
+\[
+\E{
+\prod_{j=1}^t
+\P{M_{ij}=m_{ij}\mid N_{ij}=n_{ij},\Theta_i^{(2)}}
+}
+=
+\prod_{j=1}^t\binom{n_{ij}}{m_{ij}}
+\E{D_{it}\left(\Theta_i^{(2)}\right)},
+\]
+which proves the second line of \eqref{eq.thin.L2}. It then follows
+from \eqref{eq.thin.factorization} and \eqref{eq.thin.L1} that this
+expression is \(\P{M_{i,1:t}=m_{i,1:t}\mid N_{i,1:t}=n_{i,1:t}}\).
+Finally, by \eqref{eq.thin.D},
+\[
+\E{D_{it}\left(\Theta_i^{(2)}\right)}
+=
+\E{
+\prod_{k=1}^{n_{i\bullet t}}
+\Phi\left(u_k\left(h_k+\Theta_i^{(2)}\right)\right)
+},
+\]
+and applying Lemma~\ref{lem.bp} with \(k=n_{i\bullet t}\),
+\(u_{1:k}\), and \(h_{1:k}\) proves the last line of
+\eqref{eq.thin.L2}.
+\end{proof}
+
+\begin{remark}[Separable estimation]
+\label{rem.thin.estimation}
+By Theorem~\ref{thm.thin.lik} and the independence of the regions,
+the log-likelihood of the observations
+\(\mathcal H_{1T},\ldots,\mathcal H_{IT}\) decomposes as
+\[
+\ell(\alpha,r,\beta,\sigma)
+=
+\ell^{(1)}(\alpha,r)+\ell^{(2)}(\beta,\sigma),
+\qquad
+\ell^{(k)}:=\sum_{i=1}^I\log L^{(k)}_{iT},
+\quad k=1,2.
+\]
+Hence the maximum likelihood estimators of \((\alpha,r)\) and
+\((\beta,\sigma)\) are obtained from two separate optimizations, and
+the Fisher information matrix is block-diagonal. Here,
+\(\ell^{(1)}\) is the log-likelihood of a negative binomial
+random effect panel model for \(N_{it}\), and \(\ell^{(2)}\) is the
+log-likelihood of a binomial probit model for \(M_{it}\) given
+\(N_{it}\) with a Gaussian random intercept. Periods with \(n_{it}=0\)
+do not contribute to \(\ell^{(2)}\).
+\end{remark}
+
+\begin{remark}[Computation]
+\label{rem.thin.computation}
+The dimension \(n_{i\bullet t}\) of the multivariate normal
+distribution function in \eqref{eq.thin.L2} equals the cumulative
+number of claims of region \(i\), which can be large. However, since
+\(\boldsymbol U_{it}\) is of rank one, the second line of
+\eqref{eq.thin.L2} expresses the same quantity as the one-dimensional
+integral
+\[
+\Phi_{n_{i\bullet t}}
+\left(
+\mu_{it};
+\boldsymbol I_{n_{i\bullet t}}+\sigma^2\boldsymbol U_{it}
+\right)
+=
+\int_{\Real}\phi(z)\,D_{it}(\sigma z)\,{\rm d}z,
+\]
+which depends on the data only through the \(t\) pairs
+\((n_{ij},m_{ij})\) and can be evaluated accurately by Gauss--Hermite
+quadrature.
+\end{remark}
+
+The following corollary shows that the two random effects remain
+independent a posteriori, and that the frequency random effect has a
+conjugate gamma posterior.
+
+\begin{corollary}[Posterior distribution of the random effects]
+\label{cor.thin.posterior}
+Under the setting of Theorem~\ref{thm.thin.lik}, the following
+results hold.
+\begin{itemize}
+  \item[i.] Conditional on \(\mathcal H_{it}\), the random effects
+  \(\Theta_i^{(1)}\) and \(\Theta_i^{(2)}\) are independent.
+
+  \item[ii.] We have
+  \[
+  \Theta_i^{(1)}\mid\mathcal H_{it}
+  \sim
+  \operatorname{Gamma}\left(r+n_{i\bullet t},\,r+\lambda_{i\bullet t}\right).
+  \]
+
+  \item[iii.] The conditional distribution
+  \(\Theta_i^{(2)}\mid\mathcal H_{it}\) has density
+  \(\pi(\theta\mid\mathcal H_{it})\) at \(\theta\in\Real\) given by
+  \begin{equation}\label{eq.thin.posterior2}
+  \pi(\theta\mid\mathcal H_{it})
+  =
+  \frac{
+  \displaystyle
+  \frac{1}{\sigma}\phi\left(\frac{\theta}{\sigma}\right)
+  \prod_{k=1}^{n_{i\bullet t}}
+  \Phi\left(u_k(h_k+\theta)\right)
+  }{
+  \Phi_{n_{i\bullet t}}
+  \left(
+  \mu_{it};
+  \boldsymbol I_{n_{i\bullet t}}+\sigma^2\boldsymbol U_{it}
+  \right)
+  }.
+  \end{equation}
+\end{itemize}
+\end{corollary}
+
+\begin{proof}
+Let \(\pi_1\) and \(\pi_2\) denote the prior densities of
+\(\Theta_i^{(1)}\) and \(\Theta_i^{(2)}\), respectively. By Bayes'
+formula and the proof of Theorem~\ref{thm.thin.lik}, the joint
+posterior density of
+\(\left(\Theta_i^{(1)},\Theta_i^{(2)}\right)\) at
+\((\theta_1,\theta_2)\in\Real_{>0}\times\Real\) is
+\[
+\frac{
+\pi_1(\theta_1)
+\prod_{j=1}^t\P{N_{ij}=n_{ij}\mid\Theta_i^{(1)}=\theta_1}
+}{L^{(1)}_{it}}
+\cdot
+\frac{
+\pi_2(\theta_2)
+\prod_{j=1}^t\binom{n_{ij}}{m_{ij}}D_{it}(\theta_2)
+}{L^{(2)}_{it}}.
+\]
+Each factor integrates to one, which proves part i. The first factor
+is proportional to
+\[
+\theta_1^{r+n_{i\bullet t}-1}e^{-(r+\lambda_{i\bullet t})\theta_1},
+\]
+which proves part ii. Substituting \eqref{eq.thin.D} and
+\eqref{eq.thin.L2} into the second factor proves part iii.
+\end{proof}
+
+By part ii of Corollary~\ref{cor.thin.posterior}, the posterior of the
+frequency random effect depends on the history only through
+\(n_{i\bullet t}\); in particular, the extreme claim counts
+\(m_{i,1:t}\) carry no information on \(\Theta_i^{(1)}\). Conversely,
+by part iii, the total claim counts affect the posterior of
+\(\Theta_i^{(2)}\) only by determining the number of Bernoulli trials.
+The density \eqref{eq.thin.posterior2} is a Gaussian density
+multiplied by a product of probit functions, normalized by the
+multivariate normal distribution function in Lemma~\ref{lem.bp}.
+
+We now present the exact Bayesian one-step-ahead predictions.
+
+\begin{theorem}[Closed-form one-step prediction]
+\label{thm.thin.pred}
+Consider Model~\ref{model.thin} with the realized history
+\(\mathcal H_{it}\), and let the notation be as in
+Remark~\ref{rem.thin.notation}. Then, we have the following results.
+\begin{itemize}
+  \item[i.] For \(n,m\in\mathbb N_0\) with \(m\le n\), the predictive
+  probability is
+  \[
+  \begin{aligned}
+  &\P{N_{i,t+1}=n,\,M_{i,t+1}=m\mid\mathcal H_{it}}\\
+  &\quad=
+  \frac{\Gamma\left(r+n_{i\bullet t}+n\right)}
+  {\Gamma\left(r+n_{i\bullet t}\right)n!}
+  \left(
+  \frac{r+\lambda_{i\bullet t}}{r+\lambda_{i\bullet t}+\lambda_{i,t+1}}
+  \right)^{r+n_{i\bullet t}}
+  \left(
+  \frac{\lambda_{i,t+1}}{r+\lambda_{i\bullet t}+\lambda_{i,t+1}}
+  \right)^{n}\\
+  &\qquad\times
+  \binom{n}{m}
+  \frac{
+  \Phi_{n_{i\bullet t}+n}
+  \left(
+  \mu_{it}^{(n,m)};
+  \boldsymbol I_{n_{i\bullet t}+n}+\sigma^2\boldsymbol U_{it}^{(n,m)}
+  \right)
+  }{
+  \Phi_{n_{i\bullet t}}
+  \left(
+  \mu_{it};
+  \boldsymbol I_{n_{i\bullet t}}+\sigma^2\boldsymbol U_{it}
+  \right)
+  }.
+  \end{aligned}
+  \]
+
+  \item[ii.] The one-step-ahead prediction of the total claim count is
+  \[
+  \E{N_{i,t+1}\mid\mathcal H_{it}}
+  =
+  \lambda_{i,t+1}\,
+  \frac{r+n_{i\bullet t}}{r+\lambda_{i\bullet t}}
+  =
+  \lambda_{i,t+1}
+  \left\{
+  \zeta_{it}\frac{n_{i\bullet t}}{\lambda_{i\bullet t}}
+  +
+  \left(1-\zeta_{it}\right)
+  \right\},
+  \qquad
+  \zeta_{it}:=\frac{\lambda_{i\bullet t}}{r+\lambda_{i\bullet t}}.
+  \]
+
+  \item[iii.] The predictive probability that a claim in period
+  \(t+1\) is extreme is
+  \[
+  \widehat p_{i,t+1}
+  :=
+  \E{p_{i,t+1}\left(\Theta_i^{(2)}\right)\mid\mathcal H_{it}}
+  =
+  \frac{
+  \Phi_{n_{i\bullet t}+1}
+  \left(
+  \mu_{it}^{(1,1)};
+  \boldsymbol I_{n_{i\bullet t}+1}+\sigma^2\boldsymbol U_{it}^{(1,1)}
+  \right)
+  }{
+  \Phi_{n_{i\bullet t}}
+  \left(
+  \mu_{it};
+  \boldsymbol I_{n_{i\bullet t}}+\sigma^2\boldsymbol U_{it}
+  \right)
+  }.
+  \]
+
+  \item[iv.] For \(n\in\mathbb N_0\), the one-step-ahead prediction of
+  the extreme claim count given the total claim count is
+  \[
+  \E{M_{i,t+1}\mid\mathcal H_{it},N_{i,t+1}=n}
+  =
+  n\,\widehat p_{i,t+1}.
+  \]
+
+  \item[v.] The one-step-ahead prediction of the extreme claim count is
+  \[
+  \E{M_{i,t+1}\mid\mathcal H_{it}}
+  =
+  \lambda_{i,t+1}\,
+  \frac{r+n_{i\bullet t}}{r+\lambda_{i\bullet t}}\,
+  \widehat p_{i,t+1}.
+  \]
+\end{itemize}
+\end{theorem}
+
+\begin{proof}
+We first show part i. Applying Theorem~\ref{thm.thin.lik} to the
+augmented history
+\(\mathcal H_{it}\cup\{(N_{i,t+1},M_{i,t+1})=(n,m)\}\) and to
+\(\mathcal H_{it}\), we obtain
+\[
+\P{N_{i,t+1}=n,\,M_{i,t+1}=m\mid\mathcal H_{it}}
+=
+\frac{L^{(1)}_{i,t+1}}{L^{(1)}_{it}}
+\cdot
+\frac{L^{(2)}_{i,t+1}}{L^{(2)}_{it}},
+\]
+where \(L^{(1)}_{i,t+1}\) and \(L^{(2)}_{i,t+1}\) are evaluated at the
+augmented history. By \eqref{eq.thin.L1},
+\[
+\frac{L^{(1)}_{i,t+1}}{L^{(1)}_{it}}
+=
+\frac{\Gamma\left(r+n_{i\bullet t}+n\right)}
+{\Gamma\left(r+n_{i\bullet t}\right)n!}
+\,
+\frac{\lambda_{i,t+1}^{n}\left(r+\lambda_{i\bullet t}\right)^{r+n_{i\bullet t}}}
+{\left(r+\lambda_{i\bullet t}+\lambda_{i,t+1}\right)^{r+n_{i\bullet t}+n}},
+\]
+and, by the last line of \eqref{eq.thin.L2},
+\[
+\frac{L^{(2)}_{i,t+1}}{L^{(2)}_{it}}
+=
+\binom{n}{m}
+\frac{
+\Phi_{n_{i\bullet t}+n}
+\left(
+\mu_{it}^{(n,m)};
+\boldsymbol I_{n_{i\bullet t}+n}+\sigma^2\boldsymbol U_{it}^{(n,m)}
+\right)
+}{
+\Phi_{n_{i\bullet t}}
+\left(
+\mu_{it};
+\boldsymbol I_{n_{i\bullet t}}+\sigma^2\boldsymbol U_{it}
+\right)
+},
+\]
+which proves part i.
+
+To show part ii, note that, conditional on
+\(\left(\Theta_i^{(1)},\Theta_i^{(2)}\right)\), \(N_{i,t+1}\) is
+independent of \(\mathcal H_{it}\). Hence, by part ii of
+Corollary~\ref{cor.thin.posterior},
+\[
+\E{N_{i,t+1}\mid\mathcal H_{it}}
+=
+\lambda_{i,t+1}\E{\Theta_i^{(1)}\mid\mathcal H_{it}}
+=
+\lambda_{i,t+1}\frac{r+n_{i\bullet t}}{r+\lambda_{i\bullet t}},
+\]
+and the second expression follows from
+\(
+(r+n_{i\bullet t})/(r+\lambda_{i\bullet t})
+=
+\zeta_{it}\,n_{i\bullet t}/\lambda_{i\bullet t}+1-\zeta_{it}.
+\)
+
+To show part iii, part iii of Corollary~\ref{cor.thin.posterior} gives
+\[
+\widehat p_{i,t+1}
+=
+\frac{
+\E{
+p_{i,t+1}\left(\Theta_i^{(2)}\right)
+\prod_{k=1}^{n_{i\bullet t}}
+\Phi\left(u_k\left(h_k+\Theta_i^{(2)}\right)\right)
+}
+}{
+\Phi_{n_{i\bullet t}}
+\left(
+\mu_{it};
+\boldsymbol I_{n_{i\bullet t}}+\sigma^2\boldsymbol U_{it}
+\right)
+}.
+\]
+Since
+\(p_{i,t+1}(\theta)=\Phi\left(1\cdot(\eta_{i,t+1}+\theta)\right)\), the
+product in the numerator is the product in \eqref{eq.thin.D} for the
+history augmented by \((n,m)=(1,1)\). Applying Lemma~\ref{lem.bp} to the
+augmented history proves part iii.
+
+To show part iv, we first observe that, conditional on
+\(\mathcal H_{it}\), the joint density of
+\(\left(\Theta_i^{(1)},\Theta_i^{(2)}\right)\) and the probability mass
+function of \(N_{i,t+1}\) satisfy
+\[
+\pi(\theta_1,\theta_2,n\mid\mathcal H_{it})
+=
+\pi(\theta_1\mid\mathcal H_{it})
+\P{N_{i,t+1}=n\mid\Theta_i^{(1)}=\theta_1}
+\,
+\pi(\theta_2\mid\mathcal H_{it}),
+\]
+by part i of Corollary~\ref{cor.thin.posterior} and
+Model~\ref{model.thin}. Hence \(\Theta_i^{(2)}\) is independent of
+\(N_{i,t+1}\) conditional on \(\mathcal H_{it}\). Together with the
+binomial observation equation, this gives
+\[
+\E{M_{i,t+1}\mid\mathcal H_{it},N_{i,t+1}=n}
+=
+n\,\E{p_{i,t+1}\left(\Theta_i^{(2)}\right)\mid\mathcal H_{it},N_{i,t+1}=n}
+=
+n\,\widehat p_{i,t+1}.
+\]
+
+Finally, part v follows from part iv and part ii, since
+\[
+\E{M_{i,t+1}\mid\mathcal H_{it}}
+=
+\E{N_{i,t+1}\mid\mathcal H_{it}}\,\widehat p_{i,t+1}.
+\]
+\end{proof}
+
+\begin{remark}[Interpretation of the predictions]
+\label{rem.thin.interpretation}
+Part ii of Theorem~\ref{thm.thin.pred} is the exact credibility formula
+of the Poisson-gamma model: the a priori frequency \(\lambda_{i,t+1}\)
+is multiplied by a credibility-weighted average of the observed ratio
+\(n_{i\bullet t}/\lambda_{i\bullet t}\) and the prior mean \(1\), with
+credibility factor \(\zeta_{it}\), which increases to one as
+\(\lambda_{i\bullet t}\to\infty\). Part iii is the posterior predictive
+probability that an additional Bernoulli-probit trial, namely a new
+claim, is a success.
+In particular, if \(n_{i\bullet t}=0\), then
+\(
+\widehat p_{i,t+1}
+=
+\Phi\left(\eta_{i,t+1}/\sqrt{1+\sigma^2}\right),
+\)
+which is the a priori probability that a claim is extreme. Part v shows
+that the prediction of the extreme claim count is the product of the
+two exact Bayesian predictions, one for the frequency and one for the
+proportion of extreme claims, as a consequence of the a posteriori
+independence of the random effects.
+\end{remark}
+
+We conclude this section with the unconditional moments of
+Model~\ref{model.thin}, which describe the dependence induced by the
+random effects.
+
+\begin{proposition}[Moments]
+\label{prop.thin.moments}
+Under Model~\ref{model.thin}, fix a region \(i\), and define
+\[
+\pi_{it}:=\Phi\left(\frac{\eta_{it}}{\sqrt{1+\sigma^2}}\right),
+\qquad
+\pi_{i,st}:=
+\Phi_2\left(
+(\eta_{is},\eta_{it})^\top;
+\boldsymbol I_2+\sigma^2\boldsymbol J_2
+\right),
+\qquad s,t\in\mathbb N,
+\]
+where \(\boldsymbol J_2\) is the \(2\times2\) matrix of ones. Then, for
+\(s,t\in\mathbb N\) with \(s\neq t\), we have
+\[
+\begin{aligned}
+\E{N_{it}}&=\lambda_{it},
+&
+\E{M_{it}}&=\lambda_{it}\pi_{it},\\
+\Var{N_{it}}&=\lambda_{it}+\frac{\lambda_{it}^2}{r},
+&
+\cov{N_{is},N_{it}}&=\frac{\lambda_{is}\lambda_{it}}{r},\\
+\cov{N_{it},M_{it}}&=\pi_{it}\left(\lambda_{it}+\frac{\lambda_{it}^2}{r}\right),
+&
+\cov{N_{is},M_{it}}&=\frac{\lambda_{is}\lambda_{it}\pi_{it}}{r},
+\end{aligned}
+\]
+and
+\[
+\begin{aligned}
+\Var{M_{it}}
+&=
+\lambda_{it}\pi_{it}
++
+\lambda_{it}^2
+\left\{
+\left(1+\frac1r\right)\pi_{i,tt}-\pi_{it}^2
+\right\},\\
+\cov{M_{is},M_{it}}
+&=
+\lambda_{is}\lambda_{it}
+\left\{
+\left(1+\frac1r\right)\pi_{i,st}-\pi_{is}\pi_{it}
+\right\}.
+\end{aligned}
+\]
+\end{proposition}
+
+\begin{proof}
+Write \(\Theta_1:=\Theta_i^{(1)}\) and \(\Theta_2:=\Theta_i^{(2)}\), and
+recall \(\E{\Theta_1}=1\) and \(\E{\Theta_1^2}=1+1/r\). By
+Lemma~\ref{lem.bp} with \(k=1\) and \(k=2\), and \(u_{1:k}\) the
+vector of ones,
+\[
+\E{p_{it}(\Theta_2)}=\pi_{it},
+\qquad
+\E{p_{is}(\Theta_2)p_{it}(\Theta_2)}=\pi_{i,st},
+\qquad s,t\in\mathbb N.
+\]
+Conditional on \((\Theta_1,\Theta_2)\), Model~\ref{model.thin} and
+Lemma~\ref{lem.thin} give, for \(s\neq t\),
+\[
+\begin{aligned}
+\E{N_{it}\mid\Theta_1,\Theta_2}&=\lambda_{it}\Theta_1,
+&
+\E{M_{it}\mid\Theta_1,\Theta_2}&=\lambda_{it}\Theta_1p_{it}(\Theta_2),\\
+\E{N_{it}^2\mid\Theta_1,\Theta_2}&=\lambda_{it}\Theta_1+\lambda_{it}^2\Theta_1^2,
+&
+\E{M_{it}^2\mid\Theta_1,\Theta_2}&=\lambda_{it}\Theta_1p_{it}(\Theta_2)
++\lambda_{it}^2\Theta_1^2p_{it}(\Theta_2)^2,
+\end{aligned}
+\]
+and
+\[
+\begin{aligned}
+\E{N_{it}M_{it}\mid\Theta_1,\Theta_2}
+&=
+p_{it}(\Theta_2)\E{N_{it}^2\mid\Theta_1,\Theta_2}
+=
+p_{it}(\Theta_2)\left(\lambda_{it}\Theta_1+\lambda_{it}^2\Theta_1^2\right),\\
+\E{N_{is}M_{it}\mid\Theta_1,\Theta_2}
+&=
+\lambda_{is}\lambda_{it}\Theta_1^2p_{it}(\Theta_2),\\
+\E{M_{is}M_{it}\mid\Theta_1,\Theta_2}
+&=
+\lambda_{is}\lambda_{it}\Theta_1^2p_{is}(\Theta_2)p_{it}(\Theta_2).
+\end{aligned}
+\]
+Taking expectations, using the independence of \(\Theta_1\) and
+\(\Theta_2\), and subtracting the products of the means proves the
+result.
+\end{proof}
