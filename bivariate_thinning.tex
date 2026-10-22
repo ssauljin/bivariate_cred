@@ -14,6 +14,7 @@
 \usepackage{amsfonts}
 \usepackage{amssymb}
 \usepackage{amsthm}
+\usepackage{booktabs}
 \usepackage{setspace}
 \usepackage{url}
 \usepackage[dvipsnames,svgnames,table]{xcolor}
@@ -79,12 +80,14 @@ random effects, we show that the likelihood factorizes into a
 Poisson-gamma part and a Bernoulli-probit part, so that the two sets of
 parameters can be estimated separately. We further derive the posterior
 distributions of the random effects and the exact Bayesian one-step
-predictions of both counts in closed form.
+predictions of both counts in closed form. We illustrate the model with
+annual claim counts of 17 Korean regions over 2015--2024.
 
 The paper is organized as follows. Section~\ref{sec.prelim} introduces
 the notation and two auxiliary results on Gaussian random effects in
 probit models. Section~\ref{sec.thin} presents the model and the main
-results.
+results. Section~\ref{sec.empirical} applies the model to a regional
+panel of total and extreme claim counts.
 
 
 \section{Preliminaries}
@@ -243,6 +246,8 @@ representation is convenient for computation when \(k\) is large.
 
 
 \input{sec_thinning}
+
+\input{sec_empirical}
 
 
 %\bibliographystyle{apalike}

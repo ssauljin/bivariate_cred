@@ -1,0 +1,305 @@
+%==========================================================================
+% Section: Empirical analysis
+%   Results produced by poisson_models (1).R (total claim counts) and
+%   binomial_probit_models.R (extreme claim counts); see results_extreme/.
+%==========================================================================
+\section{Empirical analysis}
+\label{sec.empirical}
+
+In this section, we fit Model~\ref{model.thin} to a regional panel of
+claim counts and evaluate its one-step-ahead predictions.
+
+\subsection{Data}
+\label{sec.emp.data}
+
+The data set contains annual observations for \(I=17\) regions of
+Korea over the years 2015--2024. For region \(i\) and year \(t\), the
+total claim count \(N_{it}\) and the extreme claim count \(M_{it}\) are
+recorded, and \(M_{it}\le N_{it}\) holds for all observations.
+% TODO: state the definition of an extreme claim (e.g. the threshold) and the data source.
+The covariate vector \(x_{it}\) consists of an intercept and the
+logarithms of four regional characteristics: the recovery budget lagged
+by one year (RecvBudget\_m1Y), the gross regional domestic product
+(GRDP), the population, and the area.
+% TODO: state the units of the covariates.
+We use the years 2015--2023 as the training period and hold out 2024
+for the evaluation of the predictions. The training period contains
+\(153\) region-years, \(932\) claims, and \(200\) extreme claims. Since
+\(8\) region-years have no claims, \(145\) region-years contribute to the
+likelihood of the extreme claim part (Remark~\ref{rem.thin.estimation}).
+
+Table~\ref{tab.emp.year} reports the annual totals. The total claim
+count varies moderately over the years, whereas the share of extreme
+claims varies considerably, from \(2.4\%\) in 2015 and \(4.1\%\) in 2021
+to \(50.3\%\) in 2020. We return to this feature in
+Section~\ref{sec.emp.discussion}.
+
+\begin{table}[htbp]
+\centering
+\caption{Annual totals of the total and extreme claim counts over the
+17 regions.}
+\label{tab.emp.year}
+\small
+\begin{tabular}{lrrrrrrrrrr}
+\toprule
+Year & 2015 & 2016 & 2017 & 2018 & 2019 & 2020 & 2021 & 2022 & 2023 & 2024\\
+\midrule
+\(\sum_i N_{it}\) & 42 & 74 & 82 & 121 & 101 & 151 & 123 & 99 & 139 & 151\\
+\(\sum_i M_{it}\) & 1 & 20 & 8 & 9 & 12 & 76 & 5 & 26 & 43 & 32\\
+Share (\%) & 2.4 & 27.0 & 9.8 & 7.4 & 11.9 & 50.3 & 4.1 & 26.3 & 30.9 & 21.2\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Estimation}
+\label{sec.emp.estimation}
+
+By Remark~\ref{rem.thin.estimation}, the maximum likelihood estimators
+of \((\alpha,r)\) and \((\beta,\sigma)\) are obtained separately from
+\(\ell^{(1)}\) and \(\ell^{(2)}\). The log-likelihood \(\ell^{(1)}\) is
+available in closed form by \eqref{eq.thin.L1}. The log-likelihood
+\(\ell^{(2)}\) is evaluated by the one-dimensional integral in
+Remark~\ref{rem.thin.computation} using Gauss--Hermite quadrature with
+\(100\) nodes; increasing the number of nodes to \(200\) changes
+\(\ell^{(2)}\) by less than \(10^{-6}\), and adaptive numerical
+integration agrees to within \(2\times10^{-4}\). Both log-likelihoods
+are maximized by a quasi-Newton method with analytic gradients followed
+by Newton iterations, and the standard errors are obtained from the
+observed information matrix. The standard errors of the random effect
+variances \(1/r\) and \(\sigma^2\) are obtained by the delta method.
+
+As a benchmark, we fit the corresponding models without random effects,
+namely the Poisson generalized linear model (GLM) for \(N_{it}\) and the
+binomial probit GLM for \(M_{it}\) given \(N_{it}\). These correspond to
+Model~\ref{model.thin} with \(\Theta_i^{(1)}\equiv1\) and
+\(\Theta_i^{(2)}\equiv0\), so that the predictions are
+\(\lambda_{i,t+1}\) and \(\Phi(\eta_{i,t+1})\), without experience
+rating. We consider two specifications of \(x_{it}\): Specification A
+uses all four covariates, and Specification B omits the recovery budget.
+The random effect models are referred to as the generalized linear mixed
+models (GLMMs).
+
+Table~\ref{tab.emp.N} reports the estimates of the total claim count
+part. The gamma random effect is supported by the likelihood ratio test,
+whose \(p\)-value is computed from the boundary-corrected
+\(\frac12\chi^2_1\) distribution, and by both information criteria. The
+recovery budget is not significant in either model, and removing it
+lowers both information criteria.
+
+\begin{table}[htbp]
+\centering
+\caption{Estimates of the total claim count part \((\alpha,r)\), with
+standard errors in parentheses. GLM: Poisson GLM; GLMM: Poisson-gamma
+GLMM.}
+\label{tab.emp.N}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+& \multicolumn{2}{c}{Specification A} & \multicolumn{2}{c}{Specification B}\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+& GLM & GLMM & GLM & GLMM\\
+\midrule
+Intercept & \(-3.192\) (1.024) & \(-0.096\) (2.492) & \(-2.559\) (0.737) & \(0.399\) (1.939)\\
+log(RecvBudget\_m1Y) & \(0.060\) (0.067) & \(0.033\) (0.111) & -- & --\\
+log(GRDP) & \(0.313\) (0.130) & \(1.120\) (0.432) & \(0.327\) (0.129) & \(1.179\) (0.390)\\
+log(Population) & \(-0.117\) (0.134) & \(-0.910\) (0.415) & \(-0.115\) (0.133) & \(-0.958\) (0.389)\\
+log(Area) & \(0.247\) (0.047) & \(0.230\) (0.088) & \(0.283\) (0.026) & \(0.247\) (0.068)\\
+\(1/r\) & -- & \(0.091\) (0.066) & -- & \(0.100\) (0.064)\\
+\midrule
+Log-likelihood & \(-388.78\) & \(-382.69\) & \(-389.19\) & \(-382.73\)\\
+AIC & \(787.55\) & \(777.38\) & \(786.38\) & \(775.47\)\\
+BIC & \(802.71\) & \(795.56\) & \(798.50\) & \(790.62\)\\
+LR test (\(p\)-value) & \multicolumn{2}{c}{\(12.18\) (\(0.0002\))} & \multicolumn{2}{c}{\(12.91\) (\(0.0002\))}\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab.emp.M} reports the estimates of the extreme claim part.
+As for the total claim count, the Gaussian random effect is supported
+by the likelihood ratio test in both specifications, with
+\(\widehat\sigma^2=0.117\) in Specification A and
+\(\widehat\sigma^2=0.058\) in Specification B, and the GLMM attains the
+lower AIC and BIC. The recovery budget is again not significant, and
+Specification B has the lower AIC and BIC among the GLMMs. In both
+parts, the coefficients of log(GRDP) and log(Population) have opposite
+signs and change considerably once the random effect is introduced.
+These two covariates are strongly correlated across regions, and
+population varies little within a region over time, so that only their
+contrast, a GRDP per capita effect, is well identified. The coefficient
+of log(Area) is the most stable across models; a larger area is
+associated with a higher frequency and a higher share of extreme claims.
+These associations are descriptive and should not be interpreted as
+causal effects.
+
+\begin{table}[htbp]
+\centering
+\caption{Estimates of the extreme claim part \((\beta,\sigma)\), with
+standard errors in parentheses.}
+\label{tab.emp.M}
+\small
+\begin{tabular}{lrrrr}
+\toprule
+& \multicolumn{2}{c}{Specification A} & \multicolumn{2}{c}{Specification B}\\
+\cmidrule(lr){2-3}\cmidrule(lr){4-5}
+& Probit GLM & Probit GLMM & Probit GLM & Probit GLMM\\
+\midrule
+Intercept & \(-0.220\) (1.735) & \(3.216\) (3.269) & \(0.246\) (1.105) & \(-0.098\) (1.808)\\
+log(RecvBudget\_m1Y) & \(0.039\) (0.111) & \(-0.294\) (0.206) & -- & --\\
+log(GRDP) & \(0.521\) (0.203) & \(1.033\) (0.448) & \(0.531\) (0.201) & \(0.733\) (0.305)\\
+log(Population) & \(-0.650\) (0.209) & \(-0.968\) (0.420) & \(-0.652\) (0.208) & \(-0.779\) (0.316)\\
+log(Area) & \(0.261\) (0.077) & \(0.444\) (0.148) & \(0.284\) (0.044) & \(0.269\) (0.063)\\
+\(\sigma^2\) & -- & \(0.117\) (0.088) & -- & \(0.058\) (0.041)\\
+\midrule
+Log-likelihood & \(-310.05\) & \(-305.34\) & \(-310.12\) & \(-306.63\)\\
+AIC & \(630.10\) & \(622.67\) & \(628.23\) & \(623.25\)\\
+BIC & \(644.98\) & \(640.53\) & \(640.14\) & \(638.14\)\\
+LR test (\(p\)-value) & \multicolumn{2}{c}{\(9.43\) (\(0.0011\))} & \multicolumn{2}{c}{\(6.98\) (\(0.0041\))}\\
+Pearson \(\chi^2\)/df & \(4.32\) & -- & \(4.27\) & --\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{One-step-ahead prediction of 2024}
+\label{sec.emp.prediction}
+
+Using the training years as the history \(\mathcal H_{i,2023}\), we
+compute the predictive probability \(\widehat p_{i,2024}\) of an extreme
+claim from part iii of Theorem~\ref{thm.thin.pred}, and predict
+\(M_{i,2024}\) in two ways:
+\begin{itemize}
+  \item[(a)] given the realized total claim count, by
+  \(N_{i,2024}\,\widehat p_{i,2024}\) (part iv of
+  Theorem~\ref{thm.thin.pred});
+  \item[(b)] without it, by
+  \(\E{N_{i,2024}\mid\mathcal H_{i,2023}}\,\widehat p_{i,2024}\)
+  (part v of Theorem~\ref{thm.thin.pred}), where the first factor is
+  given by part ii of Theorem~\ref{thm.thin.pred} with the estimates in
+  Table~\ref{tab.emp.N}.
+\end{itemize}
+For the GLM benchmark, \(\widehat p_{i,2024}\) and
+\(\E{N_{i,2024}\mid\mathcal H_{i,2023}}\) are replaced by
+\(\Phi(\eta_{i,2024})\) and \(\lambda_{i,2024}\), respectively, with
+the GLM estimates. The predictions are evaluated by the root mean
+squared error (RMSE), the mean absolute error (MAE), and the deviance,
+which is the binomial deviance in case (a) and the Poisson deviance in
+case (b).
+
+Table~\ref{tab.emp.crit} summarizes the results. In contrast to the
+in-sample comparison, the GLMM does not improve the out-of-sample
+predictions of the extreme claim counts: the GLM attains slightly lower
+values of all three criteria in both cases and both specifications. In
+case (b), the GLMM predicts a total of \(33.8\) and \(34.6\) extreme
+claims, which is closer to the realized total of \(32\) than the GLM
+totals of \(28.4\) and \(27.8\); the improvement in the total stems
+from the total claim count part, for which the GLMM predicts the
+realized total of \(151\) claims better than the GLM (\(133.4\) and
+\(133.9\) against \(113.0\) and \(111.6\)).
+
+\begin{table}[htbp]
+\centering
+\caption{Prediction criteria for the extreme claim counts in 2024
+(\(17\) regions, realized total \(\sum_iM_{i,2024}=32\)).}
+\label{tab.emp.crit}
+\small
+\begin{tabular}{llrrrr}
+\toprule
+& & \multicolumn{2}{c}{Specification A} & \multicolumn{2}{c}{Specification B}\\
+\cmidrule(lr){3-4}\cmidrule(lr){5-6}
+& Criterion & GLM & GLMM & GLM & GLMM\\
+\midrule
+(a) given \(N_{i,2024}\) & RMSE & \(2.341\) & \(2.524\) & \(2.323\) & \(2.569\)\\
+& MAE & \(1.556\) & \(1.762\) & \(1.534\) & \(1.786\)\\
+& Binomial deviance & \(37.10\) & \(43.30\) & \(36.66\) & \(43.83\)\\
+& Predicted total & \(39.7\) & \(41.1\) & \(39.4\) & \(41.7\)\\
+\midrule
+(b) unconditional & RMSE & \(1.655\) & \(1.780\) & \(1.634\) & \(1.790\)\\
+& MAE & \(1.170\) & \(1.304\) & \(1.157\) & \(1.326\)\\
+& Poisson deviance & \(21.74\) & \(24.09\) & \(21.14\) & \(24.50\)\\
+& Predicted total & \(28.4\) & \(33.8\) & \(27.8\) & \(34.6\)\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Table~\ref{tab.emp.region} reports the region-level results for
+Specification B, ordered by the posterior mean of
+\(\Theta_i^{(2)}\). The posterior means range from \(-0.30\) for
+Chungnam to \(0.28\) for Gwangju, and the credibility adjustment moves
+\(\widehat p_{i,2024}\) away from the a priori probability
+\(\Phi\left(\eta_{i,2024}/\sqrt{1+\widehat\sigma^2}\right)\) by up to
+\(11\) percentage points. The largest prediction errors of the GLMM
+occur in regions whose share of extreme claims in 2024 departs from
+their own history. For example, Gyeonggi and Chungnam had \(16\) of
+\(119\) and \(14\) of \(70\) claims classified as extreme during the
+training period, which lowers their predictive probabilities, but
+\(7\) of \(13\) and \(7\) of \(12\) claims in 2024. Conversely, Jeonnam
+and Gyeongnam had high shares during the training period but only
+\(4\) of \(17\) and \(2\) of \(19\) in 2024.
+
+\begin{table}[htbp]
+\centering
+\caption{Region-level results for Specification B: training totals,
+posterior mean of \(\Theta_i^{(2)}\), a priori and predictive
+probabilities of an extreme claim, and realized and predicted extreme
+claim counts in 2024 given \(N_{i,2024}\) (case (a)).}
+\label{tab.emp.region}
+\footnotesize
+\setlength{\tabcolsep}{4pt}
+\begin{tabular}{lrrrrrrrrr}
+\toprule
+& \multicolumn{2}{c}{2015--2023} & & \multicolumn{3}{c}{Probability of extreme claim} & \multicolumn{3}{c}{2024}\\
+\cmidrule(lr){2-3}\cmidrule(lr){5-7}\cmidrule(lr){8-10}
+Region & \(\sum_tN_{it}\) & \(\sum_tM_{it}\) & \(\E{\Theta_i^{(2)}\mid\mathcal H}\) & A priori & GLM & GLMM & \(N_{i,2024}\) & \(M_{i,2024}\) & GLMM pred.\\
+\midrule
+Gwangju & 28 & 5 & \(0.278\) & 0.079 & 0.076 & 0.125 & 5 & 0 & 0.62\\
+Jeonnam & 58 & 25 & \(0.214\) & 0.383 & 0.367 & 0.463 & 17 & 4 & 7.87\\
+Busan & 46 & 5 & \(0.165\) & 0.085 & 0.075 & 0.110 & 5 & 0 & 0.55\\
+Jeonbuk & 68 & 18 & \(0.162\) & 0.241 & 0.249 & 0.289 & 8 & 4 & 2.31\\
+Seoul & 35 & 6 & \(0.145\) & 0.132 & 0.086 & 0.161 & 2 & 0 & 0.32\\
+Gyeongnam & 64 & 19 & \(0.129\) & 0.301 & 0.284 & 0.344 & 19 & 2 & 6.53\\
+Gyeongbuk & 94 & 38 & \(0.129\) & 0.393 & 0.376 & 0.440 & 9 & 3 & 3.96\\
+Chungbuk & 70 & 22 & \(0.067\) & 0.333 & 0.317 & 0.354 & 10 & 3 & 3.54\\
+Daejeon & 22 & 1 & \(-0.030\) & 0.082 & 0.079 & 0.077 & 6 & 1 & 0.46\\
+Gangwon & 82 & 21 & \(-0.035\) & 0.333 & 0.345 & 0.317 & 22 & 1 & 6.97\\
+Daegu & 22 & 1 & \(-0.036\) & 0.097 & 0.097 & 0.090 & 6 & 0 & 0.54\\
+Sejong & 20 & 1 & \(-0.067\) & 0.100 & 0.110 & 0.088 & 2 & 0 & 0.18\\
+Ulsan & 32 & 4 & \(-0.144\) & 0.260 & 0.220 & 0.214 & 6 & 0 & 1.28\\
+Jeju & 45 & 3 & \(-0.146\) & 0.155 & 0.170 & 0.121 & 0 & 0 & 0.00\\
+Incheon & 57 & 1 & \(-0.252\) & 0.115 & 0.101 & 0.072 & 9 & 0 & 0.65\\
+Gyeonggi & 119 & 16 & \(-0.282\) & 0.280 & 0.227 & 0.191 & 13 & 7 & 2.48\\
+Chungnam & 70 & 14 & \(-0.298\) & 0.392 & 0.354 & 0.283 & 12 & 7 & 3.39\\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Discussion}
+\label{sec.emp.discussion}
+
+The results indicate that the static random effects of
+Model~\ref{model.thin} capture persistent differences between regions,
+as shown by the likelihood ratio tests, but that the share of extreme
+claims is dominated by shocks that are common within a year. Two
+diagnostics support this interpretation. First, the Pearson statistic of
+the probit GLM in Table~\ref{tab.emp.M} is about \(4.3\) times its
+degrees of freedom, so the extreme claim counts are strongly
+overdispersed relative to the binomial distribution. Second, adding
+year fixed effects to the probit GLM of Specification B reduces the
+deviance by \(156.9\) on \(8\) degrees of freedom, whereas adding region
+fixed effects on top of them reduces it by a further \(41.0\) on \(16\)
+degrees of freedom. Even with both sets of fixed effects, the Pearson
+statistic remains about \(3.9\) times its degrees of freedom. This
+suggests that the claims within a region-year are not conditionally
+independent, as would be the case when several claims arise from the
+same event. Under such shocks, the experience of a region over the
+training period is only weakly informative about its share of extreme
+claims in the next year, which explains why the credibility adjustment
+of \(\widehat p_{i,2024}\) does not improve the predictions.
+
+These findings are subject to two caveats. The evaluation is based on a
+single hold-out year with \(17\) regions and \(32\) extreme claims, so
+the differences in Table~\ref{tab.emp.crit} are small relative to their
+sampling variability; a rolling-origin evaluation over several years
+would give a more reliable comparison. Moreover, the conclusions concern
+the static specification. Natural extensions of
+Model~\ref{model.thin} are a common year effect, a random effect at the
+region-year level to absorb the dependence among claims from the same
+event, and dynamic random effects that discount older experience.

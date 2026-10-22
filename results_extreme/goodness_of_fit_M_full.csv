@@ -1,0 +1,8 @@
+"Statistic","Probit_GLM","Probit_GLMM"
+"N (region-years with N>0)",145,145
+"Regions",17,17
+"Parameters",5,6
+"Log-likelihood",-310.050042268509,-305.33520826536
+"AIC",630.100084537018,622.67041653072
+"BIC",644.983753249121,640.530818985243
+"Pearson chi2 / df",4.31908653029003,NA

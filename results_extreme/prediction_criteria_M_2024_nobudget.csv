@@ -1,0 +1,9 @@
+"Criterion","GLM","GLMM"
+"(a) given N: RMSE",2.32265199683686,2.56892635039323
+"(a) given N: MAE",1.53368869074171,1.78649761436338
+"(a) given N: binomial deviance",36.658138745621,43.8321244431142
+"(b) unconditional: RMSE",1.63407149071414,1.79000527053178
+"(b) unconditional: MAE",1.15724271110095,1.32647021262135
+"(b) unconditional: Poisson deviance",21.139260357738,24.4959931833153
+"Predicted total, given N",39.4156934829325,41.659865081752
+"Predicted total, unconditional",27.772002320156,34.6066222589928

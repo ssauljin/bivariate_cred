@@ -1,0 +1,205 @@
+=== Extreme claims by year ===
+ Year AllCount ExtCount  Share
+ 2015       42        1 0.0238
+ 2016       74       20 0.2703
+ 2017       82        8 0.0976
+ 2018      121        9 0.0744
+ 2019      101       12 0.1188
+ 2020      151       76 0.5033
+ 2021      123        5 0.0407
+ 2022       99       26 0.2626
+ 2023      139       43 0.3094
+ 2024      151       32 0.2119
+
+
+#################################################################
+## Specification: full 
+## Covariates : log(RecvBudget_m1Y) + log(GRDPperbil) + log(Population) + log(Area) 
+#################################################################
+Binomial part: 145 region-years with N > 0 (of 153), 932 claims, 200 extreme
+GLMM converged | max|grad| = 4.55e-13
+loglik: GH(100) = -305.335208 | GH(200) = -305.335208 | integrate() = -305.335090
+
+=== Coefficients ===
+                        Term GLM_Estimate  GLM_SE   GLM_z     GLM_p
+                 (Intercept)     -0.22030 1.73539 -0.1269 0.8989846
+         log(RecvBudget_m1Y)      0.03929 0.11076  0.3548 0.7227690
+             log(GRDPperbil)      0.52109 0.20278  2.5697 0.0101778
+             log(Population)     -0.64958 0.20852 -3.1152 0.0018383
+                   log(Area)      0.26086 0.07652  3.4090 0.0006519
+ Var(v_i) = sigma^2 [Region]           NA      NA      NA        NA
+ GLMM_Estimate GLMM_SE  GLMM_z   GLMM_p
+        3.2158 3.26868  0.9838 0.325208
+       -0.2941 0.20631 -1.4254 0.154049
+        1.0332 0.44816  2.3054 0.021145
+       -0.9677 0.42015 -2.3032 0.021268
+        0.4441 0.14786  3.0035 0.002669
+        0.1165 0.08792      NA       NA
+
+=== Goodness of fit ===
+                 Statistic Probit_GLM Probit_GLMM
+ N (region-years with N>0)  145.00000     145.000
+                   Regions   17.00000      17.000
+                Parameters    5.00000       6.000
+            Log-likelihood -310.05004    -305.335
+                       AIC  630.10008     622.670
+                       BIC  644.98375     640.531
+         Pearson chi2 / df    4.31909          NA
+
+sigma_hat = 0.3413, Var(v) = 0.1165 (95% CI 0.0265 - 0.5114)
+LR test for random effect: LR = 9.430, p (0.5*chi2_1) = 0.00107
+
+N part (Poisson-gamma GLMM): phi_hat = 10.9837, loglik = -382.6885
+
+=== 2024 hold-out predictions by region ===
+    Region N_train M_train E_v_given_H p_prior p_hat_GLM p_hat_GLMM N_2024
+     Busan      46       5     0.37852  0.0579    0.0796     0.1045      5
+   Gwangju      28       5     0.32479  0.1052    0.0724     0.1651      5
+   Jeonnam      58      25     0.32063  0.3568    0.3741     0.4736     17
+   Jeonbuk      68      18     0.29539  0.2126    0.2526     0.2942      8
+     Seoul      35       6     0.26414  0.1150    0.0920     0.1628      2
+ Gyeongbuk      94      38     0.16343  0.3761    0.3820     0.4330      9
+ Gyeongnam      64      19     0.15770  0.2834    0.2892     0.3290     19
+  Chungbuk      70      22     0.12847  0.3177    0.3224     0.3562     10
+      Jeju      45       3    -0.00663  0.0938    0.1785     0.0859      0
+     Daegu      22       1    -0.03500  0.0862    0.0982     0.0773      6
+   Gangwon      82      21    -0.06589  0.3332    0.3450     0.3027     22
+    Sejong      20       1    -0.12439  0.1221    0.1050     0.0952      2
+   Daejeon      22       1    -0.17217  0.1042    0.0760     0.0732      6
+   Incheon      57       1    -0.31987  0.1052    0.1033     0.0548      9
+     Ulsan      32       4    -0.34766  0.3308    0.2167     0.2141      6
+  Gyeonggi     119      16    -0.45976  0.3259    0.2277     0.1765     13
+  Chungnam      70      14    -0.50168  0.4788    0.3487     0.2906     12
+ M_2024 M_given_N_GLM M_given_N_GLMM EN_GLM EN_GLMM M_uncond_GLM M_uncond_GLMM
+      0         0.398          0.523   4.36    6.01        0.347         0.629
+      0         0.362          0.826   3.02    3.83        0.219         0.633
+      4         6.359          8.051   9.58    9.01        3.585         4.265
+      4         2.021          2.353   7.29    9.22        1.840         2.713
+      0         0.184          0.326   6.03    5.74        0.555         0.934
+      3         3.438          3.897  11.14   12.96        4.255         5.611
+      2         5.494          6.250   9.60    9.91        2.775         3.259
+      3         3.224          3.562   8.02   10.03        2.585         3.572
+      0         0.000          0.000   4.15    5.73        0.741         0.492
+      0         0.589          0.464   4.48    3.57        0.440         0.276
+      1         7.591          6.660   8.85   11.68        3.053         3.536
+      0         0.210          0.190   2.37    2.62        0.249         0.249
+      1         0.456          0.439   3.13    3.35        0.238         0.245
+      0         0.929          0.493   4.75    7.62        0.490         0.417
+      0         1.300          1.285   4.69    5.28        1.017         1.130
+      7         2.960          2.295  12.61   16.82        2.872         2.970
+      7         4.185          3.488   8.97   10.03        3.128         2.914
+
+=== 2024 prediction criteria (n = 17 regions); actual total M = 32 ===
+                           Criterion    GLM   GLMM
+                   (a) given N: RMSE  2.341  2.524
+                    (a) given N: MAE  1.556  1.762
+      (a) given N: binomial deviance 37.096 43.304
+             (b) unconditional: RMSE  1.655  1.780
+              (b) unconditional: MAE  1.170  1.304
+ (b) unconditional: Poisson deviance 21.744 24.086
+            Predicted total, given N 39.701 41.100
+      Predicted total, unconditional 28.388 33.846
+
+
+#################################################################
+## Specification: nobudget 
+## Covariates : log(GRDPperbil) + log(Population) + log(Area) 
+#################################################################
+Binomial part: 145 region-years with N > 0 (of 153), 932 claims, 200 extreme
+GLMM converged | max|grad| = 7.46e-13
+loglik: GH(100) = -306.626216 | GH(200) = -306.626216 | integrate() = -306.626212
+
+=== Coefficients ===
+                        Term GLM_Estimate  GLM_SE   GLM_z     GLM_p
+                 (Intercept)       0.2463 1.10507  0.2229 8.236e-01
+             log(GRDPperbil)       0.5311 0.20128  2.6386 8.326e-03
+             log(Population)      -0.6524 0.20812 -3.1349 1.719e-03
+                   log(Area)       0.2835 0.04413  6.4250 1.319e-10
+ Var(v_i) = sigma^2 [Region]           NA      NA      NA        NA
+ GLMM_Estimate GLMM_SE   GLMM_z    GLMM_p
+      -0.09783 1.80765 -0.05412 9.568e-01
+       0.73283 0.30519  2.40125 1.634e-02
+      -0.77852 0.31600 -2.46364 1.375e-02
+       0.26885 0.06323  4.25172 2.121e-05
+       0.05799 0.04124       NA        NA
+
+=== Goodness of fit ===
+                 Statistic Probit_GLM Probit_GLMM
+ N (region-years with N>0)  145.00000     145.000
+                   Regions   17.00000      17.000
+                Parameters    4.00000       5.000
+            Log-likelihood -310.11643    -306.626
+                       AIC  628.23286     623.252
+                       BIC  640.13980     638.136
+         Pearson chi2 / df    4.26941          NA
+
+sigma_hat = 0.2408, Var(v) = 0.0580 (95% CI 0.0144 - 0.2337)
+LR test for random effect: LR = 6.980, p (0.5*chi2_1) = 0.00412
+
+N part (Poisson-gamma GLMM): phi_hat = 10.0466, loglik = -382.7323
+
+=== 2024 hold-out predictions by region ===
+    Region N_train M_train E_v_given_H p_prior p_hat_GLM p_hat_GLMM N_2024
+   Gwangju      28       5      0.2783  0.0790    0.0759     0.1245      5
+   Jeonnam      58      25      0.2138  0.3825    0.3669     0.4631     17
+     Busan      46       5      0.1653  0.0851    0.0751     0.1100      5
+   Jeonbuk      68      18      0.1623  0.2407    0.2491     0.2889      8
+     Seoul      35       6      0.1452  0.1315    0.0861     0.1610      2
+ Gyeongnam      64      19      0.1293  0.3014    0.2838     0.3438     19
+ Gyeongbuk      94      38      0.1286  0.3925    0.3760     0.4400      9
+  Chungbuk      70      22      0.0667  0.3326    0.3173     0.3537     10
+   Daejeon      22       1     -0.0299  0.0823    0.0790     0.0767      6
+   Gangwon      82      21     -0.0349  0.3326    0.3453     0.3170     22
+     Daegu      22       1     -0.0361  0.0971    0.0973     0.0898      6
+    Sejong      20       1     -0.0667  0.1003    0.1097     0.0879      2
+     Ulsan      32       4     -0.1442  0.2601    0.2203     0.2139      6
+      Jeju      45       3     -0.1455  0.1551    0.1696     0.1208      0
+   Incheon      57       1     -0.2522  0.1150    0.1011     0.0719      9
+  Gyeonggi     119      16     -0.2822  0.2802    0.2272     0.1909     13
+  Chungnam      70      14     -0.2978  0.3918    0.3543     0.2827     12
+ M_2024 M_given_N_GLM M_given_N_GLMM EN_GLM EN_GLMM M_uncond_GLM M_uncond_GLMM
+      0         0.380          0.622   3.13    3.91        0.238         0.487
+      4         6.237          7.872   9.29    9.02        3.406         4.177
+      0         0.375          0.550   4.16    6.05        0.312         0.666
+      4         1.993          2.311   7.15    9.29        1.780         2.685
+      0         0.172          0.322   5.73    5.72        0.493         0.921
+      2         5.393          6.532   9.38    9.90        2.661         3.403
+      3         3.384          3.960  10.87   12.98        4.087         5.709
+      3         3.173          3.537   7.82   10.09        2.481         3.568
+      1         0.474          0.460   3.22    3.33        0.254         0.255
+      1         7.596          6.973   8.84   11.75        3.051         3.723
+      0         0.584          0.539   4.45    3.56        0.433         0.320
+      0         0.219          0.176   2.44    2.63        0.267         0.231
+      0         1.322          1.284   4.75    5.27        1.046         1.127
+      0         0.000          0.000   3.91    5.74        0.663         0.693
+      0         0.909          0.647   4.66    7.69        0.471         0.553
+      7         2.954          2.481  12.69   16.89        2.882         3.224
+      7         4.251          3.392   9.16   10.13        3.246         2.864
+
+=== 2024 prediction criteria (n = 17 regions); actual total M = 32 ===
+                           Criterion    GLM   GLMM
+                   (a) given N: RMSE  2.323  2.569
+                    (a) given N: MAE  1.534  1.786
+      (a) given N: binomial deviance 36.658 43.832
+             (b) unconditional: RMSE  1.634  1.790
+              (b) unconditional: MAE  1.157  1.326
+ (b) unconditional: Poisson deviance 21.139 24.496
+            Predicted total, given N 39.416 41.660
+      Predicted total, unconditional 27.772 34.607
+
+=== Fixed-effect diagnostic (probit GLM, Spec B covariates) ===
+Pearson chi2/df: base 4.27 | + year FE 3.19 | + year and region FE 3.89
+Analysis of Deviance Table
+
+Model 1: cbind(ExtCount, AllCount - ExtCount) ~ log(GRDPperbil) + log(Population) + 
+    log(Area)
+Model 2: cbind(ExtCount, AllCount - ExtCount) ~ log(GRDPperbil) + log(Population) + 
+    log(Area) + factor(Year)
+Model 3: cbind(ExtCount, AllCount - ExtCount) ~ log(GRDPperbil) + log(Population) + 
+    log(Area) + factor(Year) + factor(Region)
+  Resid. Df Resid. Dev Df Deviance  Pr(>Chi)    
+1       141     528.56                          
+2       133     371.62  8  156.947 < 2.2e-16 ***
+3       117     330.58 16   41.035 0.0005487 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
