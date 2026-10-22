@@ -1,0 +1,251 @@
+\documentclass[11pt,authoryear]{elsarticle}
+\usepackage[margin=1in]{geometry}
+\makeatletter
+\def\ps@pprintTitle{%
+  \let\@oddhead\@empty
+  \let\@evenhead\@empty
+  \let\@oddfoot\@empty
+  \let\@evenfoot\@oddfoot
+}
+\makeatother
+\usepackage{natbib}
+%\usepackage[notcite, notref]{showkeys} % show labels when printed
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{setspace}
+\usepackage{url}
+\usepackage[dvipsnames,svgnames,table]{xcolor}
+\usepackage{hyperref}
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=blue,
+    urlcolor=cyan
+}
+\onehalfspacing
+
+\def\Real{\mathbb{R}}
+\def\P#1{{\mathbb{P}}\left(#1\right)}
+\def\E#1{{\mathbb E}\left[#1\right]}
+\def\Var#1{{\rm Var}\left(#1\right)}
+\def\cov#1{{\rm Cov}\left(#1\right)}
+
+\newtheorem{lemma}{Lemma}
+\newtheorem{theorem}{Theorem}
+\newtheorem{corollary}{Corollary}
+\newtheorem{remark}{Remark}
+\newtheorem{proposition}{Proposition}
+\newtheorem{model}{Model}
+\numberwithin{equation}{section}
+
+\begin{document}
+\begin{titlepage}
+\thispagestyle{empty}
+\title{Binomial thinning credibility model for total and extreme claim counts}
+\author{Author}
+\begin{abstract}
+To be written.
+\end{abstract}
+\maketitle
+\textbf{Keywords:} credibility; binomial thinning; extreme claims;
+Poisson-gamma; probit random effect
+
+\vspace{.2cm}
+Version of \today
+\end{titlepage}
+\newpage
+
+
+\section{Introduction}
+\label{sec.intro}
+
+In many insurance portfolios, two claim counts are recorded for the same
+risk unit and period: the total number of claims and the number of
+extreme claims among them, for example the claims whose amounts exceed
+a large-loss threshold. The two counts are nested, since the number of
+extreme claims cannot exceed the total number of claims, and they are
+observed repeatedly over time. A joint model for such data should
+respect the nesting, accommodate time-varying covariates, and allow the
+past experience of a risk unit to update the predictions of both counts.
+
+This paper proposes a model in which the extreme claim count is a
+binomial thinning of the total claim count. The total claim count of a
+region follows a Poisson distribution with a gamma random effect, and
+each claim is classified as extreme with a probit probability that
+depends on a Gaussian random effect. Under independent and static
+random effects, we show that the likelihood factorizes into a
+Poisson-gamma part and a Bernoulli-probit part, so that the two sets of
+parameters can be estimated separately. We further derive the posterior
+distributions of the random effects and the exact Bayesian one-step
+predictions of both counts in closed form.
+
+The paper is organized as follows. Section~\ref{sec.prelim} introduces
+the notation and two auxiliary results on Gaussian random effects in
+probit models. Section~\ref{sec.thin} presents the model and the main
+results.
+
+
+\section{Preliminaries}
+\label{sec.prelim}
+
+\subsection{Notation}
+
+Let \(\mathbb N\) denote the set of positive integers and
+\(\mathbb N_0:=\mathbb N\cup\{0\}\). We write \(\Real\),
+\(\Real_{\ge0}\), and \(\Real_{>0}\) for the real line, the nonnegative
+real line, and the positive real line, respectively. For
+\(k\in\mathbb N\), vectors in \(\Real^k\) are column vectors, and we
+write \(x_{1:k}:=(x_1,\ldots,x_k)^\top\). The \(k\times k\) identity
+matrix is denoted by \(\boldsymbol I_k\). Inequalities between vectors
+are understood componentwise. A product over an empty index set equals
+\(1\), and a sum over an empty index set equals \(0\).
+
+We use the following distributions.
+\begin{itemize}
+  \setlength\itemsep{0em}
+  \item \(\operatorname{Gamma}(a,b)\): gamma distribution with shape
+  \(a\in\Real_{>0}\) and rate \(b\in\Real_{>0}\), so that its mean is
+  \(a/b\).
+  \item \(\operatorname{N}(\mu,\sigma^2)\): normal distribution with mean
+  \(\mu\in\Real\) and variance \(\sigma^2\in\Real_{>0}\).
+  \item \(\operatorname{MVN}_k(\mu_{1:k},\boldsymbol\Sigma)\):
+  \(k\)-variate normal distribution with mean \(\mu_{1:k}\in\Real^k\) and
+  positive semidefinite covariance matrix
+  \(\boldsymbol\Sigma\in\Real^{k\times k}\).
+  \item \(\operatorname{Pois}(\lambda)\): Poisson distribution with mean
+  \(\lambda\in\Real_{>0}\).
+  \item \(\operatorname{Bin}(n,p)\): binomial distribution with
+  \(n\in\mathbb N_0\) trials and success probability \(p\in(0,1)\), where
+  \(\operatorname{Bin}(0,p)\) is the point mass at \(0\).
+\end{itemize}
+
+Let \(\phi\) and \(\Phi\) denote the density and the distribution
+function of \(\operatorname{N}(0,1)\). For a positive semidefinite
+matrix \(\boldsymbol\Sigma\in\Real^{k\times k}\), let
+\[
+\Phi_k(x_{1:k};\boldsymbol\Sigma)
+:=
+\P{X_{1:k}\le x_{1:k}},
+\qquad
+X_{1:k}\sim\operatorname{MVN}_k(0_{1:k},\boldsymbol\Sigma),
+\quad
+x_{1:k}\in\Real^k,
+\]
+where \(0_{1:k}\in\Real^k\) is the zero vector. For \(k=0\), we set
+\(\Phi_0:=1\).
+
+
+\subsection{Gaussian random effects in probit models}
+
+The following identity converts the expectation of a product of probit
+functions of a Gaussian vector into a multivariate normal distribution
+function.
+
+\begin{lemma}[Gaussian product-probit identity]
+\label{lem.probit}
+Let \(X_{1:k}\sim\operatorname{MVN}_k(\mu_{1:k},\boldsymbol\Sigma)\),
+where \(\mu_{1:k}\in\Real^k\) and \(\boldsymbol\Sigma\in\Real^{k\times k}\)
+is positive semidefinite. Then
+\[
+\E{\prod_{j=1}^k\Phi(X_j)}
+=
+\Phi_k\left(\mu_{1:k};\boldsymbol I_k+\boldsymbol\Sigma\right).
+\]
+\end{lemma}
+
+\begin{proof}
+Let \(W_{1:k}\sim\operatorname{MVN}_k(0_{1:k},\boldsymbol I_k)\) be
+independent of \(X_{1:k}\). Since \(W_1,\ldots,W_k\) are independent
+standard normal random variables,
+\[
+\prod_{j=1}^k\Phi(X_j)
+=
+\P{W_{1:k}\le X_{1:k}\mid X_{1:k}}.
+\]
+Taking expectations gives
+\[
+\E{\prod_{j=1}^k\Phi(X_j)}
+=
+\P{W_{1:k}\le X_{1:k}}
+=
+\P{W_{1:k}-\left(X_{1:k}-\mu_{1:k}\right)\le\mu_{1:k}}.
+\]
+Since \(W_{1:k}\) and \(X_{1:k}\) are independent Gaussian vectors,
+\[
+W_{1:k}-\left(X_{1:k}-\mu_{1:k}\right)
+\sim
+\operatorname{MVN}_k\left(0_{1:k},\boldsymbol I_k+\boldsymbol\Sigma\right),
+\]
+which proves the result.
+\end{proof}
+
+Lemma~\ref{lem.probit} does not require \(\boldsymbol\Sigma\) to be
+positive definite. This is essential for the next result, in which a
+single scalar random effect is shared by all components, so that the
+covariance matrix has rank one.
+
+\begin{lemma}[Bernoulli-probit random effect]
+\label{lem.bp}
+Let \(\Theta\sim\operatorname{N}(0,\sigma^2)\) with \(\sigma>0\), and let
+\(k\in\mathbb N\), \(u_{1:k}\in\{-1,1\}^k\), and \(h_{1:k}\in\Real^k\).
+Then
+\[
+\begin{aligned}
+\E{\prod_{j=1}^k\Phi\left(u_j(h_j+\Theta)\right)}
+&=
+\int_{\Real}\phi(z)\prod_{j=1}^k\Phi\left(u_j(h_j+\sigma z)\right)
+{\rm d}z\\
+&=
+\Phi_k\left(
+(u_1h_1,\ldots,u_kh_k)^\top;
+\boldsymbol I_k+\sigma^2u_{1:k}u_{1:k}^\top
+\right).
+\end{aligned}
+\]
+\end{lemma}
+
+\begin{proof}
+The first equality follows since \(\Theta\) has the same distribution
+as \(\sigma Z\) with \(Z\sim\operatorname{N}(0,1)\). For the second equality, write
+\[
+X_{1:k}
+:=
+\left(u_1(h_1+\Theta),\ldots,u_k(h_k+\Theta)\right)^\top
+=
+(u_1h_1,\ldots,u_kh_k)^\top+u_{1:k}\Theta.
+\]
+Then
+\(
+X_{1:k}\sim\operatorname{MVN}_k\left(
+(u_1h_1,\ldots,u_kh_k)^\top,\sigma^2u_{1:k}u_{1:k}^\top
+\right),
+\)
+and Lemma~\ref{lem.probit} proves the result.
+\end{proof}
+
+\begin{remark}\label{rem.bp}
+Lemma~\ref{lem.bp} has the following interpretation. Let
+\(Z_1,\ldots,Z_k\) be conditionally independent given \(\Theta\) with
+\(Z_j\mid\Theta\sim\operatorname{Bin}\left(1,\Phi(h_j+\Theta)\right)\).
+Since \(1-\Phi(a)=\Phi(-a)\) for \(a\in\Real\), we have
+\(
+\P{Z_j=z_j\mid\Theta}=\Phi\left(u_j(h_j+\Theta)\right)
+\)
+with \(u_j:=2z_j-1\) for \(z_j\in\{0,1\}\). Hence
+Lemma~\ref{lem.bp} gives the joint probability
+\(\P{Z_{1:k}=z_{1:k}}\) in closed form. The covariance matrix
+\(\sigma^2u_{1:k}u_{1:k}^\top\) is of rank one, reflecting the single
+random effect shared by all trials, and the one-dimensional integral
+representation is convenient for computation when \(k\) is large.
+\end{remark}
+
+
+\input{sec_thinning}
+
+
+%\bibliographystyle{apalike}
+%\bibliography{references}
+
+\end{document}

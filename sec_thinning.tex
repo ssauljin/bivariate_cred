@@ -5,8 +5,7 @@
 \section{Binomial thinning model for bivariate claim frequency}
 \label{sec.thin}
 
-In this section, we apply the Bernoulli-probit machinery of
-Model~\ref{model.1} to the joint modelling of two nested claim counts.
+In this section, we develop a model for two nested claim counts.
 For each region \(i\) and period \(t\), let \(N_{it}\) denote the total
 number of claims and let \(M_{it}\) denote the number of extreme claims
 among them, for example, the claims whose amounts exceed a given
@@ -69,14 +68,13 @@ equations.
   \sim
   \operatorname{Bin}\left(N_{it},\Phi\left(\eta_{it}+\Theta_i^{(2)}\right)\right),
   \]
-  where \(\operatorname{Bin}(n,p)\) denotes the binomial distribution
-  with \(n\in\mathbb N_0\) trials and success probability \(p\in(0,1)\),
-  and \(\operatorname{Bin}(0,p)\) is the point mass at \(0\).
   Furthermore, the regions are independent: the sequences
   \(\left((N_{it},M_{it})\right)_{t\in\mathbb N}\), \(i=1,\ldots,I\),
   are mutually independent.
 \end{itemize}
 \end{model}
+Here, \(\operatorname{Bin}(0,p)\) is the point mass at \(0\), so that
+\(M_{it}=0\) whenever \(N_{it}=0\).
 
 Since \(\E{\Theta_i^{(1)}}=1\) and \(\E{\Theta_i^{(2)}}=0\), the
 intercepts in \(\alpha\) and \(\beta\) are identifiable, and
@@ -211,8 +209,8 @@ define
 u_{1:n_{i\bullet t}}u_{1:n_{i\bullet t}}^\top
 \in\Real^{n_{i\bullet t}\times n_{i\bullet t}},
 \]
-which play the roles of \((x_1c_1,\ldots,x_tc_t)^\top\) and
-\(\boldsymbol X_t\) in Theorem~\ref{thm.1}, respectively.
+which are the mean vector and the rank-one matrix appearing in
+Lemma~\ref{lem.bp} for the trials formed by the observed claims.
 
 For \(n,m\in\mathbb N_0\) with \(m\le n\), let
 \(\mu_{it}^{(n,m)}\in\Real^{n_{i\bullet t}+n}\) and
@@ -245,7 +243,7 @@ For \(n_{i\bullet t}=0\), we adopt the conventions
 The following theorem shows that the joint probability of the observed
 history factorizes into a closed-form Poisson-gamma part, which depends
 only on \((\alpha,r)\), and a Bernoulli-probit part of the form in
-Theorem~\ref{thm.1}, which depends only on \((\beta,\sigma)\).
+Lemma~\ref{lem.bp}, which depends only on \((\beta,\sigma)\).
 
 \begin{theorem}[Likelihood factorization]
 \label{thm.thin.lik}
@@ -373,19 +371,8 @@ Finally, by \eqref{eq.thin.D},
 \Phi\left(u_k\left(h_k+\Theta_i^{(2)}\right)\right)
 },
 \]
-and
-\[
-\left(
-u_1\left(h_1+\Theta_i^{(2)}\right),\ldots,
-u_{n_{i\bullet t}}\left(h_{n_{i\bullet t}}+\Theta_i^{(2)}\right)
-\right)^\top
-\sim
-\operatorname{MVN}_{n_{i\bullet t}}
-\left(
-\mu_{it},\sigma^2\boldsymbol U_{it}
-\right).
-\]
-Applying Lemma~\ref{lem.5} proves the last line of
+and applying Lemma~\ref{lem.bp} with \(k=n_{i\bullet t}\),
+\(u_{1:k}\), and \(h_{1:k}\) proves the last line of
 \eqref{eq.thin.L2}.
 \end{proof}
 
@@ -508,8 +495,9 @@ frequency random effect depends on the history only through
 \(m_{i,1:t}\) carry no information on \(\Theta_i^{(1)}\). Conversely,
 by part iii, the total claim counts affect the posterior of
 \(\Theta_i^{(2)}\) only by determining the number of Bernoulli trials.
-The density \eqref{eq.thin.posterior2} is of the same form as in
-Corollary~\ref{cor.2}.
+The density \eqref{eq.thin.posterior2} is a Gaussian density
+multiplied by a product of probit functions, normalized by the
+multivariate normal distribution function in Lemma~\ref{lem.bp}.
 
 We now present the exact Bayesian one-step-ahead predictions.
 
@@ -692,8 +680,8 @@ p_{i,t+1}\left(\Theta_i^{(2)}\right)
 Since
 \(p_{i,t+1}(\theta)=\Phi\left(1\cdot(\eta_{i,t+1}+\theta)\right)\), the
 product in the numerator is the product in \eqref{eq.thin.D} for the
-history augmented by \((n,m)=(1,1)\). Applying Lemma~\ref{lem.5} as in
-the proof of Theorem~\ref{thm.thin.lik} proves part iii.
+history augmented by \((n,m)=(1,1)\). Applying Lemma~\ref{lem.bp} to the
+augmented history proves part iii.
 
 To show part iv, we first observe that, conditional on
 \(\mathcal H_{it}\), the joint density of
@@ -734,8 +722,9 @@ of the Poisson-gamma model: the a priori frequency \(\lambda_{i,t+1}\)
 is multiplied by a credibility-weighted average of the observed ratio
 \(n_{i\bullet t}/\lambda_{i\bullet t}\) and the prior mean \(1\), with
 credibility factor \(\zeta_{it}\), which increases to one as
-\(\lambda_{i\bullet t}\to\infty\). Part iii is the analogue of part ii
-of Theorem~\ref{thm.1} for the trials formed by the individual claims.
+\(\lambda_{i\bullet t}\to\infty\). Part iii is the posterior predictive
+probability that an additional Bernoulli-probit trial, namely a new
+claim, is a success.
 In particular, if \(n_{i\bullet t}=0\), then
 \(
 \widehat p_{i,t+1}
@@ -805,7 +794,8 @@ and
 \begin{proof}
 Write \(\Theta_1:=\Theta_i^{(1)}\) and \(\Theta_2:=\Theta_i^{(2)}\), and
 recall \(\E{\Theta_1}=1\) and \(\E{\Theta_1^2}=1+1/r\). By
-Lemma~\ref{lem.5},
+Lemma~\ref{lem.bp} with \(k=1\) and \(k=2\), and \(u_{1:k}\) the
+vector of ones,
 \[
 \E{p_{it}(\Theta_2)}=\pi_{it},
 \qquad
